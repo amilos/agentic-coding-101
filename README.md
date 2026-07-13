@@ -1,126 +1,131 @@
-# NorthBank demo repository
+# Agentic Coding 101 with the GitHub Copilot App
 
-Starter repository for the **Agentic Coding 101** GitHub Copilot training
-course. It models a fictional retail bank, **NorthBank** — accounts, funds
-transfers, a ledger, and monthly interest/statements — across four stacks so
-attendees can practise agentic workflows end to end:
+A ready-to-deliver, 2-hour **train-the-trainer** course that teaches engineers how to
+use the **GitHub Copilot app** (the agent-native desktop app, GA 17 June 2026) across the
+whole software development lifecycle — grounded in a fictional retail-bank core, **NorthBank**.
 
-- **C# / .NET 8** — `src/PaymentService` (payments core) + xUnit tests.
-- **T-SQL / SQL Server** — `db/` schema and stored procedure, tSQLt tests,
-  and Atlas declarative migrations under `atlas/`.
-- **Delphi / Object Pascal** — legacy interest engine (`legacy/`), a Win32 VCL
-  statement viewer (`ui/`), DUnitX unit tests, and an Appium/WinAppDriver UI
-  test.
-- **Copilot customisation** — sample skills, a custom agent, and an MCP
-  template under `.github/`.
+The scope is deliberate: attendees learn to **use Copilot as an agentic tool, not to build
+agents from scratch**.
 
-Sample accounts used throughout: **1001** (Ada Okafor) and **1002**
-(Ben Ferreira), both GBP.
+## Audience
 
-## Prerequisites
+Developers, Architects and QA engineers at a bank (or any regulated shop). No prior
+agentic-coding experience is assumed, but attendees should be comfortable with git,
+pull requests, C#/.NET, T-SQL, and — for the legacy station — able to read Object Pascal.
 
-See the course workbook for full setup. In short:
+## The 2-hour outcome
 
-- .NET 8 SDK (`dotnet --version` ≥ 8).
-- SQL Server (local or container) for the T-SQL and tSQLt exercises;
-  [Atlas](https://atlasgo.io) CLI for migrations.
-- RAD Studio / Delphi for the `legacy/` and `ui/` code and DUnitX tests
-  (Win32). Note: there is **no native inline Copilot completion inside RAD
-  Studio** — drive edits from the Copilot desktop app against the worktree.
-- Node.js for the Appium test scaffold; WinAppDriver (Windows) to run it.
+By the end, every attendee can:
 
-## Build & run
+- Reason with the core concepts — **agent sessions & isolated worktrees, canvases,
+  My Work, Automations, Agent Merge** — and run local *and* cloud sessions.
+- Reproduce **seven concrete SDLC moves** (plan, design, implement, data, legacy, author
+  a skill, review & ship) on their own repository.
+- Extend Copilot with **skills, plugins and MCP**, and go deeper with **OpenSpec**
+  spec-driven development.
+- Apply **guardrails** appropriate to a regulated bank.
 
-### C# (.NET 8)
+## Deliverable map
 
-```bash
-# from demo-repo/
-dotnet build NorthBank.sln
-dotnet run --project src/PaymentService      # sample transfer + balances
-dotnet test                                  # xUnit tests (happy path only)
-```
+| Path | What it is |
+| --- | --- |
+| `syllabus.docx` | Formal course syllabus (matches the timings below). |
+| `slides/index.html` | The presentation — a single-file **reveal.js** deck (CDN-loaded). |
+| `slides/agentic-coding-101.pptx` | The same deck as **PowerPoint** (18 slides, speaker notes included) for editing in PowerPoint/Keynote/Google Slides. |
+| `trainer-guide.md` | Internal facilitator script: per-station talking points, timings, fallbacks. |
+| `workbook.md` | Participant hands-on workbook: each step with an expected outcome and a fallback. |
+| `cheat-sheet.md` / `cheat-sheet.html` | One-page handout of concepts, prompts and shortcuts. |
+| `demo-repo/` | The NorthBank sample repo attendees work in (C#, T-SQL, Delphi, tests, skills, MCP). |
+| `openspec-demo/` | The advanced OpenSpec walkthrough (propose → apply → archive). |
 
-### T-SQL (SQL Server)
+> Some deliverables in this map are produced by their own generators in this package; this
+> README is the top-level entry point that ties them together.
 
-```bash
-# Apply schema and the posting procedure, then the tSQLt tests, with sqlcmd:
-sqlcmd -S localhost -d NorthBank -i db/schema.sql
-sqlcmd -S localhost -d NorthBank -i db/proc_PostTransaction.sql
-sqlcmd -S localhost -d NorthBank -i tests/tsqlt/test_PostTransaction.sql
-# then:  EXEC tSQLt.RunAll;
-```
+## Facilitator setup
 
-### Atlas (declarative migrations)
+### 1. Prerequisites
 
-```bash
-export NORTHBANK_DB_URL="sqlserver://sa:PASSWORD@localhost:1433?database=NorthBank"
-cd atlas
-atlas schema apply --env local            # apply schema.hcl
-atlas migrate diff --env local            # generate a migration after edits
-```
+- The **GitHub Copilot app** installed on every machine (Windows / macOS / Linux) with a
+  **paid Copilot licence**. This is the desktop app — *not* the VS Code plugin.
+- A GitHub account with permission to create repos in the org you will use.
+- Local toolchains for the stations you intend to run live: **.NET 8 SDK**; **SQL Server**
+  + **Atlas** (atlasgo.io) and **tSQLt** for the data station; **RAD Studio / Delphi** with
+  **DUnitX**, and **Appium + WinAppDriver** for the legacy/UI station. Any station can fall
+  back to a pre-baked branch or recording if a toolchain or a live agent is unavailable.
+- See `demo-repo/README.md` for the full, per-station prerequisites pointer.
 
-### Delphi (DUnitX + UI)
+### 2. Push the demo repo to your own org (required)
 
-- Open `tests/dunitx/InterestCalcTests.dpr` in RAD Studio and run it (Win32
-  console) for the unit tests.
-- Build `ui/StatementViewer.dpr` to produce `StatementViewer.exe`.
-
-### Appium / WinAppDriver (Windows)
+The cloud coding agent, PRs, **Agent Merge** and **Automations** all need the repo to live
+on GitHub under an org you control. Do this before the session:
 
 ```bash
-cd tests/appium
-npm install
-# start WinAppDriver.exe, set APP_PATH in statement_ui_test.js, then:
-npm test
+# from the package root
+cd demo-repo
+git init
+git add .
+git commit -m "NorthBank demo repo for Agentic Coding 101"
+
+# create the repo in YOUR org and push (replace YOUR-ORG)
+gh repo create YOUR-ORG/northbank-demo --private --source=. --push
 ```
 
----
+Then open the pushed repo in the Copilot app (**Add repository** → select it) so cloud
+sessions, `My Work`, PR review and Automations are available.
 
-## Planted issues (trainers only)
+> `demo-repo/` ships two intentional defects (a missing daily-transfer-limit feature and a
+> planted non-positive-amount bug) plus four ready-to-assign issues in `ISSUES.md`. They are
+> the raw material for the stations — see the **"Planted issues"** section in
+> `demo-repo/README.md` (trainers only; do not spoil them for attendees).
 
-> This section is for facilitators. The demo repository ships with **two
-> deliberate defects** and a set of tests written to fail, so the stations have
-> something concrete to plan, implement, and verify. Do not point attendees at
-> this section until debrief.
+### 3. Open the slides
 
-### The gap — no daily transfer limit enforcement
+The deck is a single self-contained file that loads reveal.js from a CDN:
 
-`Account` has a `DailyTransferLimit`, but `TransferService.Transfer`
-(`src/PaymentService/TransferService.cs`) never enforces it. `ILedger` already
-exposes `SumTransfersToday`, so the fix is a guard, not new plumbing.
+```bash
+# just open it in any modern browser
+open slides/index.html          # macOS
+# xdg-open slides/index.html    # Linux
+# start slides/index.html       # Windows
+```
 
-- **Raised in:** Station 1 (Plan) as **ISSUES.md issue #1**.
-- **Fixed in:** Station 3 (Implement in C#) — add the guard and xUnit tests.
+- Navigate with **→ / ←**, **Esc** for the overview, and **S** to open **speaker notes**.
+- Slide numbers are shown (bottom-right).
+- **Offline room?** The top of `slides/index.html` has a comment explaining how to vendor
+  reveal.js locally (download the 4.x `dist/` + `plugin/`, then swap the four CDN URLs for
+  local paths). Everything else in the deck is already self-contained.
 
-### The bug — non-positive amounts are accepted
+### 4. Run the demos
 
-`TransferService.Transfer` does not reject `amount <= 0`. A zero amount posts a
-meaningless ledger entry; a negative amount moves money the wrong way. The
-balance check uses the correct comparison — this is the only C# defect, kept
-crisp on purpose.
+- **Stations 1–7:** open `demo-repo/` in the Copilot app and use the canonical prompt for
+  each station (they are printed on the slides, in `trainer-guide.md`, and on the
+  cheat-sheet). Start each demo from **My Work**; drive edits from the app (this matters for
+  the Delphi station — RAD Studio has no inline Copilot, the app edits Object Pascal as text).
+- **Advanced (OpenSpec):** work in `openspec-demo/`, running
+  `openspec propose add-transfer-limit` → review → `openspec apply add-transfer-limit` →
+  `openspec archive add-transfer-limit`. In the app these surface as `/propose`, `/apply`,
+  `/archive`-style prompt files under `.github/prompts/`.
+- Each hands-on step has an **expected outcome** and a **fallback** (a pre-baked `station-N`
+  branch or a recording) for when a live agent stalls.
 
-- **Discovered in:** Station 6 / QA review (and named in Station 3) as
-  **ISSUES.md issue #2**.
-- **Fixed in:** Station 3 — reject non-positive amounts before any balance
-  change; add xUnit tests for zero and negative.
+## Delivery order & timing (120 min)
 
-The same theme is mirrored in T-SQL: `dbo.PostTransaction`
-(`db/proc_PostTransaction.sql`) has no negative-amount guard either.
+| Time | Segment |
+| --- | --- |
+| 0:00–0:10 | **Framing** — autocomplete → chat → agent-native; "using Copilot, not building agents". |
+| 0:10–0:25 | **Core concepts + live app tour** — install Addy Osmani `agent-skills` together. |
+| 0:25–0:30 | **Exercise 0 warm-up** — connect the repo, start a first session. |
+| 0:30–1:20 | **Seven stations** (~7 min each: demo → micro-exercise → debrief). |
+| 1:20–1:25 | **Break**. |
+| 1:25–1:45 | **Advanced: OpenSpec** (propose → apply → archive); Spec Kit as contrast. |
+| 1:45–2:00 | **Guardrails, train-the-trainer tips, wrap, Q&A, cheat-sheet handout**. |
 
-### Tests intentionally written to fail
+### The seven stations
 
-These fail against the **current, unfixed** code and motivate the exercises.
-Each file carries a short note to that effect.
-
-- `tests/tsqlt/test_PostTransaction.sql` — the *rejects non-positive amount*
-  test fails until `dbo.PostTransaction` guards the amount (Station 4b).
-- `tests/dunitx/InterestCalcTests.pas` — the rounding test fails because
-  `CalculateMonthlyInterest` truncates instead of using banker's rounding to
-  2dp (Station 5a/5b, ISSUES.md issue #4).
-
-### Other exercise targets (not defects, but rough on purpose)
-
-- `db/reports_slow.sql` — a non-SARGable, unindexed statement query;
-  optimised in Station 4c (ISSUES.md issue #3).
-- `.github/skills/pii-redaction-check/SKILL.md` — a starter skill with a TODO
-  body; attendees complete it in Station 6.
+1. **Plan / Requirements** *(Architect/Dev)* — GitHub issue → structured task list via a skill.
+2. **Design / Architecture** *(Architect)* — options + ADR for idempotent, safely-retried transfers, on a canvas.
+3. **Implement in C#** *(Dev)* — assign an issue to an agent session; multi-file feature in PaymentService.
+4. **Data / T-SQL** *(Dev/Architect)* — Atlas declarative migration + tSQLt tests; optimise the slow statement query.
+5. **Legacy / Delphi + UI test** *(Dev/QA)* — explain & refactor InterestCalc; DUnitX tests; Appium/WinAppDriver UI test.
+6. **Author a skill** *(All)* — attendees create, install and invoke their own skill (`pii-redaction-check`).
+7. **Review & Ship** *(QA/All)* — Copilot code review on the PR, Agent Merge, and a nightly dependency/compliance Automation.

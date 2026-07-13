@@ -1,20 +1,10 @@
-# .NET build output
-bin/
-obj/
+# OS
+.DS_Store
 
-# Delphi build output
-*.exe
-*.dcu
-*.dproj.local
-*.identcache
-__history/
-Win32/
-Win64/
+# Claude local settings
+.claude/settings.local.json
 
 # Node
 node_modules/
 
-# IDE
-.vs/
-.idea/
-*.user
+# Note: demo-repo/.gitignore handles the .NET/Delphi build artifacts in that subtree

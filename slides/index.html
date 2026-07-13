@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic Coding 101 with the GitHub Copilot App</title>
+
+  <!--
+    ============================================================================
+    OFFLINE / VENDORING NOTE
+    ----------------------------------------------------------------------------
+    This deck loads reveal.js 4.x + a theme from cdnjs. For a room with no
+    internet, vendor the assets locally:
+
+      1. mkdir -p slides/vendor/reveal
+      2. Download reveal.js 4.6.1 (dist/ + plugin/) e.g.:
+           curl -L https://github.com/hakimel/reveal.js/archive/refs/tags/4.6.1.tar.gz | tar xz
+         and copy reveal.js-4.6.1/dist and reveal.js-4.6.1/plugin into slides/vendor/reveal/
+      3. Replace the four CDN URLs below with local paths, e.g.:
+           <link rel="stylesheet" href="vendor/reveal/dist/reveal.css">
+           <link rel="stylesheet" href="vendor/reveal/dist/theme/white.css">
+           <script src="vendor/reveal/dist/reveal.js"></script>
+           <script src="vendor/reveal/plugin/notes/notes.js"></script>
+      4. Open slides/index.html directly in a browser (file:// works offline).
+    Everything else in this file (custom CSS, inline SVG) is self-contained.
+    ============================================================================
+  -->
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/white.min.css" id="theme">
+
+  <style>
+    :root {
+      --nb-navy: #0a2540;
+      --nb-blue: #1c5dc4;
+      --nb-blue-light: #4a86e8;
+      --nb-accent: #00a3a3;
+      --nb-demo: #7b2ff7;
+      --nb-turn: #0f9d58;
+      --nb-bg: #ffffff;
+      --nb-ink: #16233a;
+    }
+
+    .reveal { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: var(--nb-ink); }
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--nb-navy); font-weight: 700; letter-spacing: -0.01em; text-transform: none; }
+    .reveal h1 { font-size: 2.1em; }
+    .reveal h2 { font-size: 1.5em; }
+    .reveal a { color: var(--nb-blue); }
+    .reveal strong { color: var(--nb-blue); }
+    .reveal section img, .reveal svg { background: transparent; border: none; box-shadow: none; }
+
+    .reveal .slide-number { background: var(--nb-navy); color: #fff; font-size: 0.5em; }
+
+    /* Title slide */
+    .title-slide { text-align: left; }
+    .title-slide .kicker { color: var(--nb-accent); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.5em; }
+    .title-slide h1 { color: var(--nb-navy); margin: 0.1em 0 0.2em; }
+    .title-slide .sub { color: var(--nb-blue); font-size: 0.9em; }
+    .title-slide .meta { color: #5a6b82; font-size: 0.55em; margin-top: 1.2em; }
+    .rule { height: 5px; width: 120px; background: linear-gradient(90deg, var(--nb-blue), var(--nb-accent)); border-radius: 3px; margin: 0.4em 0 0.8em; }
+
+    /* Section dividers */
+    .divider { background: linear-gradient(135deg, var(--nb-navy) 0%, #123a63 100%) !important; }
+    .divider h1, .divider h2, .divider h3, .divider p, .divider .kicker { color: #fff !important; }
+    .divider .kicker { color: var(--nb-accent) !important; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.5em; font-weight: 700; }
+    .divider .station-no { font-size: 0.7em; color: var(--nb-blue-light); font-weight: 700; }
+    .divider .persona { display: inline-block; margin-top: 0.6em; padding: 0.25em 0.8em; border: 1px solid var(--nb-accent); border-radius: 999px; color: var(--nb-accent) !important; font-size: 0.5em; font-weight: 700; letter-spacing: 0.06em; }
+
+    /* Demo & Your-turn markers */
+    .marker-demo { background: linear-gradient(135deg, var(--nb-demo) 0%, #4b1e9e 100%) !important; }
+    .marker-turn { background: linear-gradient(135deg, var(--nb-turn) 0%, #0a6e3d 100%) !important; }
+    .marker-demo h1, .marker-demo h2, .marker-demo p, .marker-demo li,
+    .marker-turn h1, .marker-turn h2, .marker-turn p, .marker-turn li { color: #fff !important; }
+    .marker-badge { display: inline-block; padding: 0.2em 0.9em; border-radius: 999px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.5em; background: rgba(255,255,255,0.18); color: #fff; }
+
+    /* Prompt block */
+    .reveal pre.prompt { width: 92%; margin: 0.6em auto; box-shadow: 0 4px 18px rgba(10,37,64,0.18); }
+    .reveal pre.prompt code {
+      display: block; background: #0d1b2e; color: #e8f0ff; border-left: 5px solid var(--nb-accent);
+      padding: 0.7em 0.9em; border-radius: 6px; font-size: 0.42em; line-height: 1.45; white-space: pre-wrap; max-height: none;
+    }
+    .reveal .persona-tag { display: inline-block; background: var(--nb-navy); color: #fff; padding: 0.15em 0.7em; border-radius: 4px; font-size: 0.5em; font-weight: 700; letter-spacing: 0.05em; }
+
+    .reveal ul.tight li { margin: 0.15em 0; }
+    .reveal .lead { font-size: 1.05em; color: var(--nb-blue); }
+    .reveal .small { font-size: 0.7em; color: #5a6b82; }
+    .cols { display: flex; gap: 1.2em; align-items: flex-start; }
+    .col { flex: 1; }
+    .card { background: #f3f7ff; border: 1px solid #d6e2f7; border-radius: 10px; padding: 0.7em 0.9em; }
+    .card h4 { margin: 0 0 0.2em; color: var(--nb-blue); font-size: 0.8em; }
+    .pill { display:inline-block; background: var(--nb-accent); color:#fff; border-radius: 999px; padding: 0.1em 0.7em; font-size:0.6em; font-weight:700; }
+    .sdlc-row { display:flex; justify-content:center; gap:0.4em; flex-wrap:wrap; margin-top:0.4em; }
+    .sdlc-chip { background:#f3f7ff; border:1px solid #cddcf5; border-radius:8px; padding:0.35em 0.55em; font-size:0.5em; width:11%; text-align:center; }
+    .sdlc-chip b { display:block; color:var(--nb-navy); font-size:1.15em; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- ==================== 1. TITLE ==================== -->
+    <section class="title-slide">
+      <div class="kicker">Train-the-Trainer &middot; 2 hours</div>
+      <h1>Agentic Coding 101</h1>
+      <div class="rule"></div>
+      <div class="sub">with the GitHub Copilot app</div>
+      <p class="meta">NorthBank core &mdash; a hands-on tour across the SDLC.<br>
+      Press <strong>S</strong> for speaker notes &middot; <strong>&rarr;</strong> to advance &middot; <strong>Esc</strong> for overview.</p>
+      <aside class="notes">
+        Welcome. This is a train-the-trainer session: you will both learn the material and learn to deliver it.
+        Two hours, hands-on, built around a fictional retail bank "NorthBank" core. Set expectations: we are USING Copilot,
+        not building agents from scratch. Confirm everyone has the desktop app installed and a paid licence before we start.
+      </aside>
+    </section>
+
+    <!-- ==================== 2. FRAMING ==================== -->
+    <section>
+      <section>
+        <h2>Framing: how we got here</h2>
+        <div class="cols">
+          <div class="col card"><h4>1. Autocomplete</h4><p class="small">Line-by-line suggestions. You drive every keystroke.</p></div>
+          <div class="col card"><h4>2. Chat</h4><p class="small">Ask/edit in a side panel. You still copy, paste, run.</p></div>
+          <div class="col card"><h4>3. Agent-native</h4><p class="small">Delegate a goal. The agent plans, edits many files, runs tools, opens PRs.</p></div>
+        </div>
+        <p class="lead" style="margin-top:0.7em">This course lives in the third era: <strong>agent-native</strong> development.</p>
+        <p style="margin-top:0.5em"><span class="pill">Scope</span> &nbsp;We are <strong>using Copilot, not building agents.</strong></p>
+        <aside class="notes">
+          Draw the arc: autocomplete (Copilot v1) &rarr; chat (side-panel Q&amp;A) &rarr; agent-native (delegate whole tasks).
+          The mental shift for a bank engineer: you move from author to reviewer/director. Emphasise scope repeatedly today:
+          we are consumers of an agentic tool, not authors of a custom agent framework. That keeps the two hours focused.
+        </aside>
+      </section>
+      <section>
+        <h2>What you will leave with</h2>
+        <ul class="tight">
+          <li>A working mental model of <strong>sessions, worktrees, canvases, My Work, Automations, Agent Merge</strong>.</li>
+          <li>Seven concrete SDLC moves you can reproduce on your own repo.</li>
+          <li>How to extend Copilot with <strong>skills, plugins and MCP</strong>.</li>
+          <li>Guardrails for using this safely in a regulated bank.</li>
+        </ul>
+        <aside class="notes">
+          Outcome slide. As a trainer, restate these four takeaways at the wrap so people feel the loop close.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== 3. WHAT IS THE COPILOT APP ==================== -->
+    <section>
+      <h2>What is the GitHub Copilot app?</h2>
+      <div class="cols">
+        <div class="col">
+          <ul class="tight">
+            <li>The agent-native <strong>desktop app</strong> &mdash; Windows / macOS / Linux.</li>
+            <li>GA <strong>17 June 2026</strong>.</li>
+            <li>Requires a <strong>paid Copilot licence</strong>.</li>
+            <li>NOT the VS Code plugin &mdash; it is repo/worktree-based.</li>
+            <li>Runs <strong>local</strong> sessions <em>and</em> GitHub-hosted <strong>cloud</strong> sessions.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <svg viewBox="0 0 320 220" width="100%" role="img" aria-label="Copilot desktop app connecting to local repo and cloud">
+            <rect x="10" y="30" width="140" height="160" rx="10" fill="#f3f7ff" stroke="#1c5dc4" stroke-width="2"/>
+            <text x="80" y="52" font-size="13" text-anchor="middle" fill="#0a2540" font-weight="bold">Copilot app</text>
+            <text x="80" y="70" font-size="9" text-anchor="middle" fill="#5a6b82">(desktop)</text>
+            <rect x="28" y="86" width="104" height="26" rx="5" fill="#fff" stroke="#4a86e8"/><text x="80" y="103" font-size="9" text-anchor="middle" fill="#16233a">Sessions</text>
+            <rect x="28" y="118" width="104" height="26" rx="5" fill="#fff" stroke="#4a86e8"/><text x="80" y="135" font-size="9" text-anchor="middle" fill="#16233a">Canvases</text>
+            <rect x="28" y="150" width="104" height="26" rx="5" fill="#fff" stroke="#4a86e8"/><text x="80" y="167" font-size="9" text-anchor="middle" fill="#16233a">My Work</text>
+            <rect x="200" y="40" width="110" height="50" rx="8" fill="#0a2540"/><text x="255" y="70" font-size="11" text-anchor="middle" fill="#fff">Local repo</text>
+            <rect x="200" y="130" width="110" height="50" rx="8" fill="#00a3a3"/><text x="255" y="153" font-size="11" text-anchor="middle" fill="#fff">GitHub cloud</text>
+            <text x="255" y="168" font-size="8" text-anchor="middle" fill="#e8fbfb">coding agent</text>
+            <line x1="150" y1="70" x2="200" y2="65" stroke="#0a2540" stroke-width="2"/>
+            <line x1="150" y1="150" x2="200" y2="152" stroke="#00a3a3" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+      <aside class="notes">
+        Nail the facts: GA 17 June 2026, desktop, paid licence, all three OSes. Contrast with the VS Code Copilot plugin most
+        people know: this is a standalone app organised around git worktrees, not an editor extension. It can run work locally
+        or hand it to the GitHub-hosted cloud coding agent. This distinction matters for the Delphi station later.
+      </aside>
+    </section>
+
+    <!-- ==================== 4. CONCEPTS ==================== -->
+    <section>
+      <!-- Sessions / worktrees -->
+      <section>
+        <h2>Concept: sessions &amp; worktrees</h2>
+        <p>Every agent <strong>session</strong> runs in its own <strong>isolated git worktree</strong> &mdash; parallel work, no stepping on each other.</p>
+        <svg viewBox="0 0 340 170" width="70%" role="img" aria-label="One repo fanning out to three isolated worktrees">
+          <rect x="20" y="66" width="90" height="40" rx="8" fill="#0a2540"/><text x="65" y="90" font-size="11" text-anchor="middle" fill="#fff">repo</text>
+          <g fill="#f3f7ff" stroke="#1c5dc4" stroke-width="2">
+            <rect x="200" y="14" width="120" height="34" rx="6"/>
+            <rect x="200" y="68" width="120" height="34" rx="6"/>
+            <rect x="200" y="122" width="120" height="34" rx="6"/>
+          </g>
+          <text x="260" y="35" font-size="9" text-anchor="middle" fill="#16233a">session A / worktree</text>
+          <text x="260" y="89" font-size="9" text-anchor="middle" fill="#16233a">session B / worktree</text>
+          <text x="260" y="143" font-size="9" text-anchor="middle" fill="#16233a">session C / worktree</text>
+          <line x1="110" y1="86" x2="200" y2="31" stroke="#4a86e8" stroke-width="2"/>
+          <line x1="110" y1="86" x2="200" y2="85" stroke="#4a86e8" stroke-width="2"/>
+          <line x1="110" y1="86" x2="200" y2="139" stroke="#4a86e8" stroke-width="2"/>
+        </svg>
+        <aside class="notes">
+          The worktree is the key safety property: an agent can churn on session B while you keep working, and nothing leaks
+          between them. Show this live in the tour. Analogy: each session gets its own sandboxed copy of the working tree.
+        </aside>
+      </section>
+      <!-- Canvases -->
+      <section>
+        <h2>Concept: canvases</h2>
+        <p>Shared surfaces that show the agent's <strong>plan, terminals, diffs and workflow state</strong> as it works.</p>
+        <svg viewBox="0 0 340 160" width="72%" role="img" aria-label="A canvas showing plan, terminal and diff panes">
+          <rect x="10" y="10" width="320" height="140" rx="10" fill="#f3f7ff" stroke="#1c5dc4" stroke-width="2"/>
+          <rect x="24" y="26" width="90" height="108" rx="6" fill="#fff" stroke="#4a86e8"/><text x="69" y="44" font-size="9" text-anchor="middle" fill="#0a2540" font-weight="bold">Plan</text>
+          <line x1="34" y1="56" x2="104" y2="56" stroke="#cddcf5"/><line x1="34" y1="70" x2="104" y2="70" stroke="#cddcf5"/><line x1="34" y1="84" x2="90" y2="84" stroke="#cddcf5"/>
+          <rect x="124" y="26" width="90" height="108" rx="6" fill="#0d1b2e"/><text x="169" y="44" font-size="9" text-anchor="middle" fill="#00e0d0" font-weight="bold">Terminal</text>
+          <text x="132" y="60" font-size="7" fill="#8fe" >$ dotnet test</text><text x="132" y="72" font-size="7" fill="#7c8">passed</text>
+          <rect x="224" y="26" width="92" height="108" rx="6" fill="#fff" stroke="#4a86e8"/><text x="270" y="44" font-size="9" text-anchor="middle" fill="#0a2540" font-weight="bold">Diff</text>
+          <rect x="232" y="52" width="76" height="10" fill="#e6f7ec"/><rect x="232" y="66" width="76" height="10" fill="#fdeaea"/><rect x="232" y="80" width="76" height="10" fill="#e6f7ec"/>
+        </svg>
+        <aside class="notes">
+          Canvases are where the agent's thinking becomes visible and reviewable. As a trainer, keep pointing at the canvas
+          during demos so people learn to read the plan and diff before they approve anything.
+        </aside>
+      </section>
+      <!-- My Work -->
+      <section>
+        <h2>Concept: My Work</h2>
+        <p>A single <strong>queue</strong> of your sessions, issues and PRs &mdash; your command centre.</p>
+        <svg viewBox="0 0 320 160" width="60%" role="img" aria-label="My Work queue list">
+          <rect x="30" y="14" width="260" height="132" rx="10" fill="#f3f7ff" stroke="#1c5dc4" stroke-width="2"/>
+          <text x="46" y="36" font-size="11" fill="#0a2540" font-weight="bold">My Work</text>
+          <g>
+            <rect x="46" y="46" width="228" height="24" rx="5" fill="#fff" stroke="#4a86e8"/><circle cx="60" cy="58" r="4" fill="#00a3a3"/><text x="74" y="62" font-size="9" fill="#16233a">Session: transfer limit &mdash; running</text>
+            <rect x="46" y="76" width="228" height="24" rx="5" fill="#fff" stroke="#4a86e8"/><circle cx="60" cy="88" r="4" fill="#1c5dc4"/><text x="74" y="92" font-size="9" fill="#16233a">Issue #2: reject non-positive amount</text>
+            <rect x="46" y="106" width="228" height="24" rx="5" fill="#fff" stroke="#4a86e8"/><circle cx="60" cy="118" r="4" fill="#0f9d58"/><text x="74" y="122" font-size="9" fill="#16233a">PR #7: ready to review</text>
+          </g>
+        </svg>
+        <aside class="notes">
+          My Work is where you triage. When cloud sessions finish, they surface here. Encourage trainers to start demos from
+          My Work so attendees build the habit of a single queue rather than losing track of parallel agents.
+        </aside>
+      </section>
+      <!-- Automations -->
+      <section>
+        <h2>Concept: Automations</h2>
+        <p>Recurring / background prompts &mdash; the agent works on a schedule, not just on demand.</p>
+        <svg viewBox="0 0 320 150" width="62%" role="img" aria-label="Clock triggering a recurring prompt that opens an issue">
+          <circle cx="60" cy="75" r="34" fill="#f3f7ff" stroke="#1c5dc4" stroke-width="2"/>
+          <line x1="60" y1="75" x2="60" y2="52" stroke="#0a2540" stroke-width="3"/><line x1="60" y1="75" x2="78" y2="82" stroke="#0a2540" stroke-width="3"/>
+          <text x="60" y="128" font-size="9" text-anchor="middle" fill="#5a6b82">nightly</text>
+          <line x1="98" y1="75" x2="150" y2="75" stroke="#4a86e8" stroke-width="2" marker-end="url(#ar)"/>
+          <rect x="150" y="52" width="150" height="46" rx="8" fill="#0a2540"/><text x="225" y="72" font-size="9" text-anchor="middle" fill="#fff">Check deps &amp; CVEs</text><text x="225" y="88" font-size="9" text-anchor="middle" fill="#00e0d0">&rarr; open an issue</text>
+          <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4a86e8"/></marker></defs>
+        </svg>
+        <aside class="notes">
+          Automations turn Copilot into a background teammate: nightly dependency/CVE sweeps, compliance checks, doc refreshes.
+          We wire one up in Station 7. Caution attendees on cost/noise: schedule deliberately.
+        </aside>
+      </section>
+      <!-- Agent Merge -->
+      <section>
+        <h2>Concept: Agent Merge</h2>
+        <p>Guides a PR through <strong>review &rarr; checks &rarr; merge</strong> &mdash; with you approving the gates.</p>
+        <svg viewBox="0 0 340 120" width="80%" role="img" aria-label="PR flowing through review, checks and merge">
+          <g font-size="9" text-anchor="middle" fill="#fff">
+            <rect x="10" y="40" width="70" height="40" rx="8" fill="#1c5dc4"/><text x="45" y="64">PR</text>
+            <rect x="110" y="40" width="70" height="40" rx="8" fill="#0a2540"/><text x="145" y="60">Review</text>
+            <rect x="210" y="40" width="70" height="40" rx="8" fill="#0a2540"/><text x="245" y="60">Checks</text>
+            <rect x="300" y="40" width="34" height="40" rx="8" fill="#0f9d58"/><text x="317" y="64">Merge</text>
+          </g>
+          <g stroke="#4a86e8" stroke-width="2" marker-end="url(#ar2)">
+            <line x1="80" y1="60" x2="108" y2="60"/><line x1="180" y1="60" x2="208" y2="60"/><line x1="280" y1="60" x2="298" y2="60"/>
+          </g>
+          <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4a86e8"/></marker></defs>
+        </svg>
+        <aside class="notes">
+          Agent Merge shepherds a PR the last mile. It is assistive, not autonomous: you still approve. In a bank, human review
+          gates stay mandatory &mdash; make that explicit here and again on the guardrails slide.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== 5. SKILLS / PLUGINS / MCP ==================== -->
+    <section>
+      <section>
+        <h2>Extending Copilot: Skills</h2>
+        <p><strong>Skills</strong> = folders of instructions/scripts Copilot loads when relevant.</p>
+        <ul class="tight">
+          <li>A <code>SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>).</li>
+          <li>Loaded on demand when the task matches.</li>
+          <li>Community: <strong>Addy Osmani <code>agent-skills</code></strong> (24 lifecycle skills), <strong>Matt Pocock</strong> short-form skills, <strong>github/awesome-copilot</strong>.</li>
+        </ul>
+        <pre class="prompt"><code>.github/skills/banking-review/SKILL.md
+---
+name: banking-review
+description: Review a diff for NorthBank money-safety rules
+---</code></pre>
+        <aside class="notes">
+          In the tour (0:10&ndash;0:25) we install Addy Osmani's agent-skills together so everyone has a shared, real library.
+          Skills are the lightest customisation: a markdown file with frontmatter. Attendees author their own in Station 6.
+        </aside>
+      </section>
+      <section>
+        <h2>Extending Copilot: Plugins</h2>
+        <p><strong>Plugins</strong> bundle custom agents, skills, hooks, MCP servers and LSP configs.</p>
+        <ul class="tight">
+          <li>Custom agents: <code>*.agent.md</code></li>
+          <li>Hooks: <code>hooks.json</code> &middot; MCP: <code>.mcp.json</code> / <code>mcp.json</code></li>
+          <li>Install: <code>/plugin install owner/repo</code></li>
+        </ul>
+        <aside class="notes">
+          Plugins are how a bank platform team packages house rules and ships them to everyone with one install command.
+          The demo-repo ships a sample security-reviewer.agent.md to show the shape of a custom agent.
+        </aside>
+      </section>
+      <section>
+        <h2>Extending Copilot: MCP</h2>
+        <p><strong>Model Context Protocol</strong> servers wire external tools/data into repo and coding-agent settings.</p>
+        <svg viewBox="0 0 330 120" width="70%" role="img" aria-label="Copilot connecting to MCP servers">
+          <rect x="10" y="40" width="90" height="40" rx="8" fill="#0a2540"/><text x="55" y="64" font-size="10" text-anchor="middle" fill="#fff">Copilot</text>
+          <g fill="#f3f7ff" stroke="#1c5dc4" stroke-width="2" font-size="9" text-anchor="middle">
+            <rect x="200" y="8" width="120" height="30" rx="6"/><text x="260" y="28" fill="#16233a">Filesystem MCP</text>
+            <rect x="200" y="46" width="120" height="30" rx="6"/><text x="260" y="66" fill="#16233a">GitHub MCP</text>
+            <rect x="200" y="84" width="120" height="30" rx="6"/><text x="260" y="104" fill="#16233a">DB / custom MCP</text>
+          </g>
+          <g stroke="#00a3a3" stroke-width="2"><line x1="100" y1="60" x2="200" y2="23"/><line x1="100" y1="60" x2="200" y2="61"/><line x1="100" y1="60" x2="200" y2="99"/></g>
+        </svg>
+        <aside class="notes">
+          MCP is the standard socket for giving the agent new capabilities and data sources. The repo ships a template mcp.json
+          with a filesystem server plus a commented GitHub server. Keep the security lens: every MCP server is new surface area.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== 6. SDLC MAP ==================== -->
+    <section class="divider" id="sdlc-map">
+      <div class="kicker">The journey</div>
+      <h2 style="color:#fff">Seven stations across the SDLC</h2>
+      <div class="sdlc-row">
+        <div class="sdlc-chip"><b>1</b>Plan / Requirements</div>
+        <div class="sdlc-chip"><b>2</b>Design / Architecture</div>
+        <div class="sdlc-chip"><b>3</b>Implement in C#</div>
+        <div class="sdlc-chip"><b>4</b>Data / T-SQL</div>
+        <div class="sdlc-chip"><b>5</b>Legacy / Delphi + UI</div>
+        <div class="sdlc-chip"><b>6</b>Author a skill</div>
+        <div class="sdlc-chip"><b>7</b>Review &amp; Ship</div>
+      </div>
+      <p class="small" style="color:#cfe0f7; margin-top:1em">~7 min each: demo &rarr; micro-exercise &rarr; debrief. We return to this map between stations.</p>
+      <aside class="notes">
+        This is the spine of the hands-on hour (0:30&ndash;1:20). Use this slide as a progress anchor &mdash; come back to it between
+        stations so people always know where they are. Each station: short demo, a micro-exercise they try, a quick debrief.
+        Every step has an expected outcome and a fallback (pre-baked branch/recording) if a live agent stalls.
+      </aside>
+    </section>
+
+    <!-- ==================== STATION 1 ==================== -->
+    <section>
+      <section class="divider">
+        <div class="station-no">Station 1</div>
+        <h1 style="color:#fff">Plan / Requirements</h1>
+        <span class="persona">Lead: Architect / Dev</span>
+        <p class="small" style="color:#cfe0f7">GitHub issue &rarr; structured task list via a skill.</p>
+        <aside class="notes">Frame the goal: turn a raw issue into an actionable, reviewable task list. This is where agentic work should start &mdash; plan before code.</aside>
+      </section>
+      <section>
+        <h2>Station 1 &middot; Plan / Requirements</h2>
+        <span class="persona-tag">Architect / Dev</span>
+        <p style="margin-top:0.5em">Read issue #1 (the daily-transfer-limit gap) and produce a structured task list with acceptance criteria and likely files to change.</p>
+        <pre class="prompt"><code>Using the requirements-to-tasks skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.</code></pre>
+        <p class="small"><strong>Expected:</strong> a checklist naming TransferService.cs, Ledger.cs and the test project. <strong>Fallback:</strong> pre-baked task list on branch <code>station-1</code>.</p>
+        <aside class="notes">
+          Show how a skill shapes the output into a consistent task format. Debrief: the value is a reviewable plan, not code yet.
+          Micro-exercise: attendees run the same prompt on their connected repo.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== STATION 2 ==================== -->
+    <section>
+      <section class="divider">
+        <div class="station-no">Station 2</div>
+        <h1 style="color:#fff">Design / Architecture</h1>
+        <span class="persona">Lead: Architect</span>
+        <p class="small" style="color:#cfe0f7">Options + ADR for idempotent, safely-retried transfers &mdash; on a canvas.</p>
+        <aside class="notes">Design station. Emphasise trade-off thinking and capturing the decision as an ADR that lives in the repo.</aside>
+      </section>
+      <section>
+        <h2>Station 2 &middot; Design / Architecture</h2>
+        <span class="persona-tag">Architect</span>
+        <p style="margin-top:0.5em">Compare designs for idempotent transfers so a retry never double-posts; write an ADR.</p>
+        <pre class="prompt"><code>We retry failed transfers. Propose 2-3 designs to make Transfer idempotent so a retry never double-posts. Compare trade-offs, then write an ADR to docs/adr/0001-idempotent-transfers.md.</code></pre>
+        <p class="small"><strong>Expected:</strong> 2-3 options (idempotency key, dedupe table, natural key) + an ADR file. <strong>Fallback:</strong> sample ADR on branch <code>station-2</code>.</p>
+        <aside class="notes">
+          Do this on a canvas so the plan and the resulting diff are visible. Debrief: the ADR is a durable artefact &mdash; the
+          agent is drafting, the architect decides. Micro-exercise: attendees critique the agent's trade-off table.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== STATION 3 ==================== -->
+    <section>
+      <section class="divider">
+        <div class="station-no">Station 3</div>
+        <h1 style="color:#fff">Implement in C#</h1>
+        <span class="persona">Lead: Dev</span>
+        <p class="small" style="color:#cfe0f7">Assign an issue to an agent session; multi-file feature in PaymentService.</p>
+        <aside class="notes">The core implement loop. Assign issue #1 to a session, review the diff before applying. This is also where a sharp eye catches the planted non-positive-amount bug.</aside>
+      </section>
+      <section>
+        <h2>Station 3 &middot; Implement in C#</h2>
+        <span class="persona-tag">Dev</span>
+        <p style="margin-top:0.5em">Implement the daily transfer limit across PaymentService and add xUnit tests &mdash; review the diff first.</p>
+        <pre class="prompt"><code>Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests. Show me the diff before applying.</code></pre>
+        <p class="small"><strong>Expected:</strong> multi-file diff + new passing tests. <strong>Fallback:</strong> completed branch <code>station-3</code>.</p>
+        <aside class="notes">
+          Model the habit: "show me the diff before applying." Review on the canvas, then approve. Point out that the tests only
+          cover the limit &mdash; the negative-amount bug is still lurking (we hunt it in Station 6/QA). Micro-exercise: run it, read the diff.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== STATION 4 ==================== -->
+    <section>
+      <section class="divider">
+        <div class="station-no">Station 4</div>
+        <h1 style="color:#fff">Data / T-SQL</h1>
+        <span class="persona">Lead: Dev / Architect</span>
+        <p class="small" style="color:#cfe0f7">Atlas migration + tSQLt tests + optimise the slow statement query.</p>
+        <aside class="notes">Three data sub-tasks: declarative migration with Atlas, tSQLt tests, and a SARGability fix. Run whichever fits time.</aside>
+      </section>
+      <section>
+        <h2>Station 4 &middot; Data / T-SQL</h2>
+        <span class="persona-tag">Dev / Architect</span>
+        <p class="small" style="margin:0.3em 0">4a &mdash; Atlas declarative schema change</p>
+        <pre class="prompt"><code>Add a nullable Reference column to LedgerEntries using Atlas declarative schema (atlas/schema.hcl) and generate the migration.</code></pre>
+        <p class="small" style="margin:0.3em 0">4b &mdash; tSQLt tests for the posting proc</p>
+        <pre class="prompt"><code>Write tSQLt tests for dbo.PostTransaction covering a normal post and a non-positive amount that must be rejected.</code></pre>
+        <p class="small" style="margin:0.3em 0">4c &mdash; make the slow query SARGable</p>
+        <pre class="prompt"><code>Explain why db/reports_slow.sql is slow and rewrite it to be SARGable; suggest the index to add.</code></pre>
+        <p class="small"><strong>Fallback:</strong> branch <code>station-4</code> with migration, tests and rewritten query.</p>
+        <aside class="notes">
+          Atlas = declarative schema-as-code for MSSQL; tSQLt = SQL Server unit tests for stored procs. 4b's non-positive test is
+          written to FAIL against the current proc &mdash; that motivates the fix and mirrors the C# bug theme. 4c: the WHERE wraps
+          PostedAt in a function, killing index use. Pick one or two sub-tasks depending on the room's time.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== STATION 5 ==================== -->
+    <section>
+      <section class="divider">
+        <div class="station-no">Station 5</div>
+        <h1 style="color:#fff">Legacy / Delphi + UI test</h1>
+        <span class="persona">Lead: Dev / QA</span>
+        <p class="small" style="color:#cfe0f7">Explain &amp; refactor InterestCalc; DUnitX tests; Appium/WinAppDriver UI test.</p>
+        <aside class="notes">Prove the tool works on legacy Object Pascal even though RAD Studio has no inline Copilot. Drive edits from the app, repo/worktree-based.</aside>
+      </section>
+      <section>
+        <h2>Station 5 &middot; Legacy / Delphi + UI test</h2>
+        <span class="persona-tag">Dev / QA</span>
+        <p class="small" style="margin:0.3em 0">5a &mdash; explain &amp; refactor rounding</p>
+        <pre class="prompt"><code>Explain legacy/InterestCalc.pas, then refactor CalculateMonthlyInterest to use banker's rounding to 2 decimal places without changing the public signature.</code></pre>
+        <p class="small" style="margin:0.3em 0">5b &mdash; DUnitX tests</p>
+        <pre class="prompt"><code>Generate DUnitX tests for CalculateMonthlyInterest including a rounding edge case.</code></pre>
+        <p class="small" style="margin:0.3em 0">5c &mdash; Appium + WinAppDriver UI test</p>
+        <pre class="prompt"><code>Scaffold an Appium + WinAppDriver test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.</code></pre>
+        <p class="small"><strong>Note:</strong> No native inline completion in RAD Studio &mdash; the app edits Object Pascal as text. <strong>Fallback:</strong> branch <code>station-5</code>.</p>
+        <aside class="notes">
+          Key message: agentic edits/refactors/test-gen work fine on Delphi because the app is repo/worktree-based &mdash; you just
+          drive it from the app, not the IDE. The current InterestCalc has a rounding weakness (Trunc / no 2dp). DUnitX for logic,
+          Appium+WinAppDriver for the Win32 statement screen (targets edtAccountId, btnLoad, lstStatement by Name).
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== STATION 6 ==================== -->
+    <section>
+      <section class="divider">
+        <div class="station-no">Station 6</div>
+        <h1 style="color:#fff">Author a skill</h1>
+        <span class="persona">Lead: All</span>
+        <p class="small" style="color:#cfe0f7">Create + install + invoke your own skill.</p>
+        <aside class="notes">Everyone builds. This is the "teach them to fish" station &mdash; they complete the starter pii-redaction-check skill and run it.</aside>
+      </section>
+      <section>
+        <h2>Station 6 &middot; Author a skill</h2>
+        <span class="persona-tag">All</span>
+        <p style="margin-top:0.5em">Complete the starter skill, then run it over the code &mdash; and watch it flag the non-positive-amount path.</p>
+        <pre class="prompt"><code>Create a skill named pii-redaction-check that flags account numbers, names and emails written to logs or console. Put it in .github/skills/pii-redaction-check/SKILL.md, then run it over TransferService.cs.</code></pre>
+        <p class="small"><strong>Expected:</strong> a completed SKILL.md + findings on logging paths. <strong>Fallback:</strong> reference skill on branch <code>station-6</code>.</p>
+        <aside class="notes">
+          The repo ships a starter pii-redaction-check/SKILL.md (frontmatter + TODO body). Attendees fill the body, install and
+          invoke it. Debrief: skills encode house rules once, reuse everywhere. QA lens: running review here surfaces the planted bug.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== STATION 7 ==================== -->
+    <section>
+      <section class="divider">
+        <div class="station-no">Station 7</div>
+        <h1 style="color:#fff">Review &amp; Ship</h1>
+        <span class="persona">Lead: QA / All</span>
+        <p class="small" style="color:#cfe0f7">Copilot review &rarr; Agent Merge &rarr; an Automation.</p>
+        <aside class="notes">Close the loop to production: review the PR, use Agent Merge to shepherd it, then set up a nightly Automation. Human approval stays mandatory.</aside>
+      </section>
+      <section>
+        <h2>Station 7 &middot; Review &amp; Ship</h2>
+        <span class="persona-tag">QA / All</span>
+        <p class="small" style="margin:0.3em 0">Review the PR, then Agent Merge</p>
+        <pre class="prompt"><code>Review this PR for banking-safety issues and summarise required changes.</code></pre>
+        <p class="small" style="margin:0.3em 0">Set up a nightly Automation</p>
+        <pre class="prompt"><code>Every night, check for outdated NuGet dependencies and known CVEs and open an issue if any are found.</code></pre>
+        <p class="small"><strong>Expected:</strong> review comments + a merged PR + a scheduled Automation. <strong>Fallback:</strong> branch <code>station-7</code> + recording.</p>
+        <aside class="notes">
+          Sequence: Copilot code review on the PR &rarr; Agent Merge guides it through gates (you approve) &rarr; wire the nightly
+          dependency/CVE Automation. Reinforce: Agent Merge is assistive; human review is non-negotiable in a bank.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== DEMO / YOUR TURN MARKERS ==================== -->
+    <section class="marker-demo">
+      <span class="marker-badge">Demo</span>
+      <h1 style="color:#fff; margin-top:0.4em">Watch me first</h1>
+      <p>Purple slides = the trainer drives. Follow the canvas: read the plan, then the diff, then approve.</p>
+      <aside class="notes">
+        This is the reusable "Demo" marker style. Whenever you hit a purple slide in delivery, hands off keyboards &mdash; attendees
+        watch. Narrate what you are approving and why.
+      </aside>
+    </section>
+    <section class="marker-turn">
+      <span class="marker-badge">Your turn</span>
+      <h1 style="color:#fff; margin-top:0.4em">Now you drive</h1>
+      <p>Green slides = micro-exercise on your own connected repo. Aim for the expected outcome; use the fallback branch if the agent stalls.</p>
+      <aside class="notes">
+        Reusable "Your turn" marker. Green = hands on keyboards. Timebox strictly (~2-3 min) so stations stay on schedule.
+        Rescue anyone who stalls with the pre-baked branch.
+      </aside>
+    </section>
+
+    <!-- ==================== ADVANCED: OPENSPEC ==================== -->
+    <section>
+      <section class="divider">
+        <div class="kicker">Advanced &middot; 1:25&ndash;1:45</div>
+        <h1 style="color:#fff">Spec-driven development</h1>
+        <p class="small" style="color:#cfe0f7">OpenSpec: propose &rarr; apply &rarr; archive.</p>
+        <aside class="notes">After the break. This is the "level up" segment &mdash; specs before code, tracked as artefacts.</aside>
+      </section>
+      <section>
+        <h2>OpenSpec &middot; propose &rarr; apply &rarr; archive</h2>
+        <p>Lightweight, <strong>brownfield-first</strong> spec-driven development. Generates <code>.github/prompts/*.prompt.md</code> that the Copilot app surfaces as slash commands.</p>
+        <svg viewBox="0 0 340 90" width="80%" role="img" aria-label="OpenSpec propose apply archive flow">
+          <g font-size="10" text-anchor="middle" fill="#fff">
+            <rect x="10" y="30" width="90" height="36" rx="8" fill="#1c5dc4"/><text x="55" y="52">/propose</text>
+            <rect x="125" y="30" width="90" height="36" rx="8" fill="#0a2540"/><text x="170" y="52">/apply</text>
+            <rect x="240" y="30" width="90" height="36" rx="8" fill="#00a3a3"/><text x="285" y="52">/archive</text>
+          </g>
+          <g stroke="#4a86e8" stroke-width="2" marker-end="url(#ar3)"><line x1="100" y1="48" x2="123" y2="48"/><line x1="215" y1="48" x2="238" y2="48"/></g>
+          <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4a86e8"/></marker></defs>
+        </svg>
+        <pre class="prompt"><code>openspec propose add-transfer-limit
+# review generated proposal/specs/tasks
+openspec apply  add-transfer-limit
+openspec archive add-transfer-limit</code></pre>
+        <div class="card" style="margin-top:0.4em"><h4>Contrast: GitHub Spec Kit</h4><p class="small" style="margin:0">Heavier &mdash; templates + CLI, <code>/specify</code> <code>/plan</code> <code>/tasks</code>, agent-agnostic (30+ agents). Choose OpenSpec for brownfield &amp; light-touch; Spec Kit for greenfield &amp; ceremony.</p></div>
+        <aside class="notes">
+          OpenSpec (Fission-AI) is lightweight and brownfield-first; the propose/apply/archive verbs appear as slash-command
+          prompt files. Spec Kit (github/spec-kit) is the heavier, template-driven, agent-agnostic alternative. Position them as
+          two points on a spectrum, not competitors. Reuse add-transfer-limit so it mirrors the station work.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================== GUARDRAILS ==================== -->
+    <section>
+      <h2>Guardrails for a regulated bank</h2>
+      <div class="cols">
+        <div class="col">
+          <ul class="tight">
+            <li><strong>Human review is mandatory</strong> &mdash; Agent Merge assists, it does not replace approval.</li>
+            <li>Read the <strong>diff and plan on the canvas</strong> before applying.</li>
+            <li>Money is <strong>decimal / Currency</strong>, never float. No PII in logs.</li>
+            <li>Every transfer path validated; ledger entries balanced.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <ul class="tight">
+            <li>Treat each <strong>MCP server</strong> as new attack surface &mdash; least privilege.</li>
+            <li>Schedule <strong>Automations</strong> deliberately (cost + noise).</li>
+            <li>Keep secrets out of prompts and worktrees.</li>
+            <li>Encode house rules as <strong>skills/plugins</strong> so review is consistent.</li>
+          </ul>
+        </div>
+      </div>
+      <aside class="notes">
+        The most important slide for a bank audience. Trainer tips: (1) always demo "show me the diff before applying"; (2) never
+        merge without a human gate; (3) remind that the banking-review skill and security-reviewer agent exist to make review
+        consistent. Tie back to the planted bug: tooling helps, but judgement ships.
+      </aside>
+    </section>
+
+    <!-- ==================== WRAP / Q&A ==================== -->
+    <section class="divider">
+      <div class="kicker">Wrap &middot; 1:45&ndash;2:00</div>
+      <h1 style="color:#fff">Recap, tips &amp; Q&amp;A</h1>
+      <ul class="tight" style="color:#e8f0ff; font-size:0.8em; margin-top:0.6em">
+        <li>Mental model: sessions/worktrees, canvases, My Work, Automations, Agent Merge.</li>
+        <li>Seven SDLC moves you can run on your own repo tomorrow.</li>
+        <li>Extend with skills, plugins, MCP; go deeper with OpenSpec.</li>
+        <li>Guardrails first &mdash; you direct, you review, you ship.</li>
+      </ul>
+      <p class="small" style="color:#cfe0f7; margin-top:0.8em">Cheat-sheet handout &middot; questions welcome.</p>
+      <aside class="notes">
+        Close the loop against the four takeaways from slide 2. Hand out the cheat-sheet. As a trainer-of-trainers, invite them to
+        run this deck themselves and reuse the fallback branches. Leave time for questions.
+      </aside>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script>
+<script>
+  Reveal.initialize({
+    slideNumber: true,
+    hash: true,
+    controls: true,
+    progress: true,
+    center: true,
+    transition: 'slide',
+    plugins: [ RevealNotes ]
+  });
+</script>
+</body>
+</html>
