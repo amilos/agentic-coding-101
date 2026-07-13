@@ -128,15 +128,15 @@
   <section class="card">
     <h2>Prompt patterns</h2>
     <p><span class="weak">Weak:</span> <code>Fix the transfer bug.</code></p>
-    <p><span class="good">Good:</span> <code>TransferService.Transfer accepts a 0 or negative amount, letting money flow the wrong way. Reject non-positive amounts, add an xUnit test, and show me the diff before applying.</code></p>
+    <p><span class="good">Good:</span> <code>TransferService.Transfer accepts a 0 or negative amount, letting money flow the wrong way. Reject non-positive amounts and add an xUnit test.</code></p>
     <p><strong>Context:</strong> name the file/class, the rule, the expected behaviour, and the constraint (e.g. money is <code>decimal</code>).</p>
-    <p><strong>Plan/diff first:</strong> end with <em>"Propose a plan"</em> or <em>"Show me the diff before applying"</em>, then approve.</p>
+    <p><strong>Plan first:</strong> end with <em>"Propose a plan"</em> (planning mode). Don't ask for the diff — each session runs in a worktree and the app shows it on the <strong>Canvas</strong> by default; review it there before you apply or merge.</p>
     <p><strong>Iterate:</strong> feed back the failing test or review comment — don't restart. Small steps beat one giant prompt.</p>
     <table>
       <tr><th>Do</th><th>Avoid</th></tr>
       <tr><td>State file, rule, expected outcome</td><td>"Make it better"</td></tr>
       <tr><td>Ask for options/ADR on design calls</td><td>Let agent pick silently</td></tr>
-      <tr><td>Request diff before apply</td><td>Auto-apply and hope</td></tr>
+      <tr><td>Read the Canvas diff before you apply</td><td>Merge without reading it</td></tr>
       <tr><td>Paste failing test to iterate</td><td>Restart the whole prompt</td></tr>
     </table>
   </section>
@@ -203,7 +203,7 @@ archive add-transfer-limit  → close out</code></pre>
       <tr><td><strong>tSQLt</strong></td><td>SQL Server unit tests for stored procs</td></tr>
       <tr><td><strong>Atlas</strong></td><td>Declarative schema-as-code migrations (mssql)</td></tr>
       <tr><td><strong>DUnitX</strong></td><td>Delphi / Win32 unit tests</td></tr>
-      <tr><td><strong>Appium + WinAppDriver</strong></td><td>Win32 VCL UI automation</td></tr>
+      <tr><td><strong>Appium + NovaWindows</strong></td><td>Win32 VCL UI automation</td></tr>
     </table>
   </section>
 
@@ -224,13 +224,13 @@ archive add-transfer-limit  → close out</code></pre>
     <ul>
       <li><strong>Plan:</strong> <code>Using the requirements-to-tasks skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.</code></li>
       <li><strong>Design/ADR:</strong> <code>We retry failed transfers. Propose 2–3 designs to make Transfer idempotent so a retry never double-posts. Compare trade-offs, then write an ADR to docs/adr/0001-idempotent-transfers.md.</code></li>
-      <li><strong>Implement:</strong> <code>Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests. Show me the diff before applying.</code></li>
+      <li><strong>Implement:</strong> <code>Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests.</code></li>
       <li><strong>Atlas:</strong> <code>Add a nullable Reference column to LedgerEntries using Atlas declarative schema (atlas/schema.hcl) and generate the migration.</code></li>
       <li><strong>tSQLt:</strong> <code>Write tSQLt tests for dbo.PostTransaction covering a normal post and a non-positive amount that must be rejected.</code></li>
       <li><strong>SARGable:</strong> <code>Explain why db/reports_slow.sql is slow and rewrite it to be SARGable; suggest the index to add.</code></li>
       <li><strong>Delphi refactor:</strong> <code>Explain legacy/InterestCalc.pas, then refactor CalculateMonthlyInterest to use banker's rounding to 2 decimal places without changing the public signature.</code></li>
       <li><strong>DUnitX:</strong> <code>Generate DUnitX tests for CalculateMonthlyInterest including a rounding edge case.</code></li>
-      <li><strong>Appium:</strong> <code>Scaffold an Appium + WinAppDriver test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.</code></li>
+      <li><strong>Appium:</strong> <code>Scaffold an Appium + NovaWindows test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.</code></li>
       <li><strong>Author skill:</strong> <code>Create a skill named pii-redaction-check that flags account numbers, names and emails written to logs or console. Put it in .github/skills/pii-redaction-check/SKILL.md, then run it over TransferService.cs.</code></li>
       <li><strong>Review:</strong> <code>Review this PR for banking-safety issues and summarise required changes.</code></li>
       <li><strong>Automation:</strong> <code>Every night, check for outdated NuGet dependencies and known CVEs and open an issue if any are found.</code></li>

@@ -9,7 +9,7 @@ attendees can practise agentic workflows end to end:
 - **T-SQL / SQL Server** — `db/` schema and stored procedure, tSQLt tests,
   and Atlas declarative migrations under `atlas/`.
 - **Delphi / Object Pascal** — legacy interest engine (`legacy/`), a Win32 VCL
-  statement viewer (`ui/`), DUnitX unit tests, and an Appium/WinAppDriver UI
+  statement viewer (`ui/`), DUnitX unit tests, and an Appium/NovaWindows UI
   test.
 - **Copilot customisation** — sample skills, a custom agent, and an MCP
   template under `.github/`.
@@ -27,7 +27,9 @@ See the course workbook for full setup. In short:
 - RAD Studio / Delphi for the `legacy/` and `ui/` code and DUnitX tests
   (Win32). Note: there is **no native inline Copilot completion inside RAD
   Studio** — drive edits from the Copilot desktop app against the worktree.
-- Node.js for the Appium test scaffold; WinAppDriver (Windows) to run it.
+- Node.js for the Appium test scaffold; the **NovaWindows** Appium driver
+  (`appium driver install --source=npm appium-novawindows-driver`) to run it on
+  Windows — no WinAppDriver needed.
 
 ## Build & run
 
@@ -42,22 +44,35 @@ dotnet test                                  # xUnit tests (happy path only)
 
 ### T-SQL (SQL Server)
 
+```powershell
+# one-time: create BOTH databases (NorthBank + the empty NorthBank_dev scratch DB).
+# Uses local sqlcmd if present, else runs sqlcmd inside the sql2025 container.
+pwsh ./scripts/create-databases.ps1
+```
+
 ```bash
-# Apply schema and the posting procedure, then the tSQLt tests, with sqlcmd:
-sqlcmd -S localhost -d NorthBank -i db/schema.sql
-sqlcmd -S localhost -d NorthBank -i db/proc_PostTransaction.sql
-sqlcmd -S localhost -d NorthBank -i tests/tsqlt/test_PostTransaction.sql
+# apply schema + posting procedure, then the tSQLt tests (-C trusts the cert):
+sqlcmd -S localhost,1433 -U sa -P Password123 -C -d NorthBank -i db/schema.sql
+sqlcmd -S localhost,1433 -U sa -P Password123 -C -d NorthBank -i db/proc_PostTransaction.sql
+sqlcmd -S localhost,1433 -U sa -P Password123 -C -d NorthBank -i tests/tsqlt/test_PostTransaction.sql
 # then:  EXEC tSQLt.RunAll;
 ```
 
 ### Atlas (declarative migrations)
 
+No Docker, no env vars — the connection strings are baked into `atlas/atlas.hcl` for the
+local demo (localhost:1433, sa / Password123; `NorthBank` target + empty `NorthBank_dev`
+scratch, both created by the script above).
+
 ```bash
-export NORTHBANK_DB_URL="sqlserver://sa:PASSWORD@localhost:1433?database=NorthBank"
 cd atlas
-atlas schema apply --env local            # apply schema.hcl
-atlas migrate diff --env local            # generate a migration after edits
+atlas schema apply --env local            # apply schema.hcl to NorthBank
+atlas migrate diff  --env local           # generate a migration after editing schema.hcl
 ```
+
+The two databases are separate on purpose: Atlas requires its scratch/dev database to be
+**empty and dedicated** (it errors if it isn't clean), so `NorthBank_dev` must not be
+`NorthBank`. For real/shared use, switch `atlas.hcl` back to `getenv(...)` URLs.
 
 ### Delphi (DUnitX + UI)
 
@@ -65,14 +80,26 @@ atlas migrate diff --env local            # generate a migration after edits
   console) for the unit tests.
 - Build `ui/StatementViewer.dpr` to produce `StatementViewer.exe`.
 
-### Appium / WinAppDriver (Windows)
+### Appium / NovaWindows driver (Windows)
+
+Uses the [NovaWindows](https://github.com/AutomateThePlanet/appium-novawindows-driver)
+Appium 2 driver — a standalone drop-in for the old Windows driver, so **no
+WinAppDriver install** and no separate server exe.
 
 ```bash
+# one-time: Appium + the NovaWindows driver
+npm install -g appium
+appium driver install --source=npm appium-novawindows-driver
+# enable Windows Developer Mode, then start the Appium server (127.0.0.1:4723):
+appium
+
+# in another shell: install deps, point APP_PATH at StatementViewer.exe, run:
 cd tests/appium
 npm install
-# start WinAppDriver.exe, set APP_PATH in statement_ui_test.js, then:
 npm test
 ```
+
+The test uses `automationName: "NovaWindows"` (see `statement_ui_test.js`).
 
 ---
 
@@ -99,10 +126,13 @@ meaningless ledger entry; a negative amount moves money the wrong way. The
 balance check uses the correct comparison — this is the only C# defect, kept
 crisp on purpose.
 
-- **Discovered in:** Station 6 / QA review (and named in Station 3) as
-  **ISSUES.md issue #2**.
-- **Fixed in:** Station 3 — reject non-positive amounts before any balance
-  change; add xUnit tests for zero and negative.
+- **Named in:** Station 1/3 as **ISSUES.md issue #2**.
+- **Discovered & fixed in:** Station 7 — the **Copilot code review** (and the
+  `banking-review` skill, which checks every transfer path) flags the missing
+  guard; reject non-positive amounts before any balance change and add xUnit
+  tests for zero and negative. (A room that tackles issue #2 early can instead
+  fix it in Station 3.) Note: the Station 6 `pii-redaction-check` skill does
+  **not** find this — it only flags PII in logs/console.
 
 The same theme is mirrored in T-SQL: `dbo.PostTransaction`
 (`db/proc_PostTransaction.sql`) has no negative-amount guard either.

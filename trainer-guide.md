@@ -39,7 +39,7 @@ You have been handed a package. Know what each piece is for:
 - [ ] **Clone and push the demo repo to your own org.** `demo-repo/` must exist as a real GitHub repository you control. Cloud sessions, PR creation, Agent Merge and Automations act on *that* remote.
 - [ ] **Confirm licences.** Every machine that will drive an agent needs a paid Copilot licence signed in. Verify your own first; ask participants to confirm theirs in the joining instructions.
 - [ ] **Install the Copilot app** (desktop, macOS/Windows/Linux) on the training machine and sign in. Confirm it is the **app**, not the VS Code extension.
-- [ ] **Pre-bake fallback branches** for every station (see per-station boxes). Push them so you can `git checkout` or open the finished PR instantly if a live agent stalls. Suggested names: `fallback/station-1` … `fallback/station-7`, plus `fallback/openspec`.
+- [ ] **Pre-bake the fallback branches.** The standalone demo repo **`amilos/agentic-coding-101-demo`** already has empty skeleton branches `station-1` … `station-7` and `openspec` off `main`. Fill each with that station's finished state (see per-station boxes) and push, so you can `git checkout station-N` or open the finished PR instantly if a live agent stalls. Attendees clone this repo (not the training-package repo).
 - [ ] **Capture screenshots / short recordings** of each station's happy path. Store them locally — do not rely on the network at delivery time.
 - [ ] **Run each demo once, start to finish, on the training machine.** This warms caches, surfaces licence prompts, and tells you the real wall-clock time each agent takes today.
 - [ ] **Confirm the marketplace demo works in the Copilot app** (used in §5). We publish a real Copilot marketplace bundling Addy Osmani's + Matt Pocock's skills: **`amilos/agentic-coding-101-marketplace`**. Install it once, in the app GUI:
@@ -186,12 +186,14 @@ Run each station as **demo (≈3 min) → micro-exercise (≈2 min) → debrief 
 
 **Prompt (verbatim):**
 ```
-Using the requirements-to-tasks skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.
+Using the planning-and-task-breakdown skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.
 ```
+
+**Skill source:** `planning-and-task-breakdown` is one of Addy Osmani's skills, installed from **`agentic-coding-101-marketplace`** in §5. If a room skipped the §5 install, add it now (**Settings → Plugins → Add Marketplace**) or drop that one skill into `demo-repo/.github/skills/` — otherwise the agent just runs the prompt without it (still fine, slightly less structured).
 
 **Files referenced:** `demo-repo/ISSUES.md` (issue #1 = "Enforce daily transfer limit in TransferService"), `src/PaymentService/TransferService.cs`, `src/PaymentService/Account.cs` (the `DailyTransferLimit` field).
 
-**What the agent should do:** load the requirements-to-tasks skill, read issue #1, emit a numbered task list with acceptance criteria and predict the files it will touch (TransferService, Ledger for today's-sum, tests).
+**What the agent should do:** load the planning-and-task-breakdown skill, read issue #1, emit a numbered task list with acceptance criteria and predict the files it will touch (TransferService, Ledger for today's-sum, tests).
 
 **Teaching moment:** a skill turns a vague issue into an actionable plan *before* any code is written. Planning is delegable too.
 
@@ -199,7 +201,7 @@ Using the requirements-to-tasks skill, read ISSUES.md issue #1 and produce a str
 - Agent doesn't invoke the skill → its frontmatter `description` didn't match. Say so and re-prompt naming the skill explicitly.
 - Task list omits acceptance criteria → point at the issue's acceptance-criteria section and re-run.
 
-> **> Fallback:** show the pre-baked task list (screenshot) or open `fallback/station-1`. Read the acceptance criteria aloud.
+> **> Fallback:** show the pre-baked task list (screenshot) or open `station-1`. Read the acceptance criteria aloud.
 
 ---
 
@@ -223,32 +225,32 @@ We retry failed transfers. Propose 2–3 designs to make Transfer idempotent so 
 - Jumps to code instead of an ADR → re-prompt: "Don't implement; write the ADR only."
 - Only one option → "Give me at least two alternatives with trade-offs."
 
-> **> Fallback:** open the pre-baked `docs/adr/0001-idempotent-transfers.md` from `fallback/station-2` and walk the trade-off table.
+> **> Fallback:** open the pre-baked `docs/adr/0001-idempotent-transfers.md` from `station-2` and walk the trade-off table.
 
 ---
 
 ### Station 3 — Implement in C#
 
-> **Goal:** assign an issue to an agent session and land a multi-file feature in PaymentService.
+> **Goal:** assign an issue to an agent session, land a multi-file feature in PaymentService, and **open a PR** from it (that PR is what Station 7 reviews and merges).
 > **Lead persona:** Dev.
 
 **Prompt (verbatim):**
 ```
-Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests. Show me the diff before applying.
+Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests.
 ```
 
 **Files referenced:** `src/PaymentService/TransferService.cs`, `src/PaymentService/Ledger.cs` (sum of today's transfers), `tests/PaymentService.Tests/TransferServiceTests.cs` (one existing happy-path test).
 
-**What the agent should do:** add daily-limit enforcement in `Transfer`, using the ledger's today's-total, and add xUnit tests for the limit — **and pause to show the diff before applying**.
+**What the agent should do:** add daily-limit enforcement in `Transfer`, using the ledger's today's-total, and add xUnit tests for the limit. The session's diff shows on the **Canvas** by default — review it before you apply. Then **push the session branch and open a PR** (from the session's Canvas, or let a cloud agent open it) — Stations 4–6 are side-quests, but this PR is the through-line that Station 7 reviews and merges.
 
-**Teaching moment:** "**Show me the diff before applying**" is the phrase that keeps you in control. Review every hunk before it touches the tree.
+**Teaching moment:** the Canvas **always** shows the session's diff (each session is its own worktree) — the discipline is to *read it before you apply or merge*, not to ask the model to print it. Asking "show me the diff" just makes it paste a patch into chat. Review every hunk on the Canvas; nothing touches your branch until you apply.
 
 **Common failure modes:**
 - Applies without pausing → re-run and stress the diff-first clause; discard and redo.
-- Fixes only the limit and silently walks past the non-positive-amount bug → *good* — that's Station 6's job. Don't let it wander there now.
+- Fixes only the limit and silently walks past the non-positive-amount bug → *good* — the Station 7 review is where that surfaces. Don't let it wander there now.
 - Tests reference a method that doesn't exist → have the agent run the tests and self-correct.
 
-> **> Fallback:** open the finished PR from `fallback/station-3` and review the diff as if the agent produced it.
+> **> Fallback:** open the finished PR from `station-3` and review the diff as if the agent produced it.
 
 ---
 
@@ -259,7 +261,7 @@ Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Updat
 
 **Prompt 4a (verbatim):**
 ```
-Add a nullable Reference column to LedgerEntries using Atlas declarative schema (atlas/schema.hcl) and generate the migration.
+In atlas/schema.hcl, add a nullable Reference column of type nvarchar(140) to the LedgerEntries table, then generate the migration with `atlas migrate diff`.
 ```
 **Prompt 4b (verbatim):**
 ```
@@ -272,7 +274,7 @@ Explain why db/reports_slow.sql is slow and rewrite it to be SARGable; suggest t
 
 **Files referenced:** `atlas/schema.hcl`, `atlas/atlas.hcl`, `db/proc_PostTransaction.sql`, `tests/tsqlt/test_PostTransaction.sql`, `db/reports_slow.sql`, `db/schema.sql`.
 
-**What the agent should do:** (4a) edit `schema.hcl` to add nullable `LedgerEntries.Reference` and generate the Atlas migration; (4b) write two tSQLt tests — the non-positive-amount test is **written to fail** against the current guard-less proc, motivating a fix; (4c) explain the non-SARGable `WHERE` (e.g. `CONVERT(date, PostedAt)=@Day`), rewrite to a range predicate, and recommend the supporting index.
+**What the agent should do:** (4a) edit `schema.hcl` to add the nullable `LedgerEntries.Reference` column (`nvarchar(140)`, per the prompt) and generate the Atlas migration; (4b) write two tSQLt tests — the non-positive-amount test is **written to fail** against the current guard-less proc, motivating a fix; (4c) explain the non-SARGable `WHERE` (e.g. `CONVERT(date, PostedAt)=@Day`), rewrite to a range predicate, and recommend the supporting index.
 
 **Teaching moment:** the agent works across *data* too — schema-as-code, DB unit tests, and query tuning — and a **failing test is a feature**: it documents the gap before the fix.
 
@@ -281,13 +283,13 @@ Explain why db/reports_slow.sql is slow and rewrite it to be SARGable; suggest t
 - tSQLt test written to pass (hiding the gap) → insist the non-positive case asserts rejection so it fails today.
 - Query "optimised" but still non-SARGable → point at the `CONVERT`/`YEAR()` wrapper on the column.
 
-> **> Fallback:** show pre-baked outputs from `fallback/station-4` — the migration file, the failing tSQLt run, and the before/after query with the index DDL.
+> **> Fallback:** show pre-baked outputs from `station-4` — the migration file, the failing tSQLt run, and the before/after query with the index DDL.
 
 ---
 
 ### Station 5 — Legacy / Delphi + UI test
 
-> **Goal:** explain & refactor legacy Object Pascal, generate DUnitX tests, scaffold an Appium/WinAppDriver UI test.
+> **Goal:** explain & refactor legacy Object Pascal, generate DUnitX tests, scaffold an Appium/NovaWindows UI test.
 > **Lead persona:** Dev / QA.
 
 **Prompt 5a (verbatim):**
@@ -300,7 +302,7 @@ Generate DUnitX tests for CalculateMonthlyInterest including a rounding edge cas
 ```
 **Prompt 5c (verbatim):**
 ```
-Scaffold an Appium + WinAppDriver test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.
+Scaffold an Appium + NovaWindows test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.
 ```
 
 **Files referenced:** `legacy/InterestCalc.pas` (unit `uInterestCalc`, rounding weakness — divides annual by 12, uses `Trunc`, no 2-dp rounding); `tests/dunitx/InterestCalcTests.dpr` + `InterestCalcTests.pas`; `ui/StatementViewer.dpr`, `ui/uMainForm.pas`, `ui/uMainForm.dfm` (controls `edtAccountId`, `btnLoad` caption "Load", `lstStatement`/`memStatement`); `tests/appium/statement_ui_test.js`, `tests/appium/package.json`.
@@ -314,7 +316,7 @@ Scaffold an Appium + WinAppDriver test that loads a statement for account 1001 i
 - Refactor changes the signature → re-prompt "keep the public signature identical".
 - Appium test hard-codes paths → fine, they're placeholders; note the automation IDs come from the stable control `Name`s.
 
-> **> Fallback:** open `fallback/station-5` — the refactored unit, the DUnitX run showing the rounding test now green, and the Appium scaffold.
+> **> Fallback:** open `station-5` — the refactored unit, the DUnitX run showing the rounding test now green, and the Appium scaffold.
 
 ---
 
@@ -330,7 +332,7 @@ Create a skill named pii-redaction-check that flags account numbers, names and e
 
 **Files referenced:** starter template at `.github/skills/pii-redaction-check/SKILL.md` (frontmatter + TODO body), the complete reference `.github/skills/banking-review/SKILL.md`, and the target `src/PaymentService/TransferService.cs`.
 
-**What the agent should do:** flesh out the starter `SKILL.md` (name/description frontmatter + detection body), then run it over `TransferService.cs` and report any PII-in-logs findings. Running it over `TransferService.cs` is also a natural moment for the **non-positive-amount bug** to surface if the review skill is broad.
+**What the agent should do:** flesh out the starter `SKILL.md` (name/description frontmatter + detection body), then run it over `TransferService.cs` and report PII reaching logs, the console, or returned messages — e.g. the account identifiers interpolated into the `TransferResult.Fail(...)` messages. (Point it at `Program.cs` too and it flags the account ids and balances written to the console.) It is a **PII check**, so it will **not** surface the non-positive-amount logic bug — that's caught by the review in Station 7.
 
 **Teaching moment:** customisation closes the loop — you consumed a community skill in §5, now you author one. `SKILL.md` frontmatter (`name`, `description`) is what makes the agent pick it up.
 
@@ -338,7 +340,7 @@ Create a skill named pii-redaction-check that flags account numbers, names and e
 - Skill created but not invoked → "now run it over TransferService.cs".
 - Frontmatter malformed → point at `banking-review/SKILL.md` as the reference shape.
 
-> **> Fallback:** open the completed `pii-redaction-check/SKILL.md` from `fallback/station-6` and run it live (it's short and fast).
+> **> Fallback:** open the completed `pii-redaction-check/SKILL.md` from `station-6` and run it live (it's short and fast).
 
 ---
 
@@ -367,7 +369,7 @@ Every night, check for outdated NuGet dependencies and known CVEs and open an is
 - Agent Merge blocked by branch protection / no approval → expected; explain the human gate is deliberate.
 - Automation created but participants expect it to run instantly → it's *scheduled* (nightly); show where it lives in **Automations**.
 
-> **> Fallback:** show a screenshot of the review comments, the Agent Merge flow, and the registered Automation from `fallback/station-7`.
+> **> Fallback:** show a screenshot of the review comments, the Agent Merge flow, and the registered Automation from `station-7`.
 
 ---
 
@@ -395,7 +397,7 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 
 > **Contrast — Spec Kit (github/spec-kit).** Heavier: templates + a CLI, commands `/specify /plan /tasks`, and **agent-agnostic** (30+ agents). Frame it as: *OpenSpec = light, brownfield, fast to adopt; Spec Kit = structured, template-driven, portable across agents.* Pick per project.
 
-> **> Fallback:** if the CLI stalls, open the pre-generated proposal/specs/tasks from `fallback/openspec` and walk propose→apply→archive from the files. The concept survives without a live run.
+> **> Fallback:** if the CLI stalls, open the pre-generated proposal/specs/tasks from `openspec` and walk propose→apply→archive from the files. The concept survives without a live run.
 
 ---
 
@@ -404,7 +406,7 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 ### 9a. Guardrails — say these plainly
 
 > **Non-negotiables for using agents on real code:**
-> - **Review every diff.** The agent is fast and confident and sometimes wrong. "Show me the diff before applying" is the default posture.
+> - **Review every diff.** The agent is fast and confident and sometimes wrong. Reading the Canvas diff before you apply or merge is the default posture.
 > - **PII / data policy.** No customer data, account numbers, names or emails in prompts, logs or console. (This is literally what Station 6's skill checks.)
 > - **Licensing.** Paid Copilot licence required; respect repo and dependency licences the agent introduces.
 > - **No auto-merge.** Agent Merge *assists* — a human approves and merges. Keep branch protection on.
@@ -462,4 +464,4 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 - Addy Osmani `agent-skills` — github.com/addyosmani/agent-skills
 - Matt Pocock short-form skills; github/awesome-copilot collection.
 - OpenSpec — github.com/Fission-AI/OpenSpec · GitHub Spec Kit — github/spec-kit
-- Atlas — atlasgo.io (mssql) · tSQLt · DUnitX · Appium + WinAppDriver.
+- Atlas — atlasgo.io (mssql) · tSQLt · DUnitX · Appium + NovaWindows.
