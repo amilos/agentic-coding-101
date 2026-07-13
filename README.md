@@ -50,27 +50,27 @@ By the end, every attendee can:
 - A GitHub account with permission to create repos in the org you will use.
 - Local toolchains for the stations you intend to run live: **.NET 8 SDK**; **SQL Server**
   + **Atlas** (atlasgo.io) and **tSQLt** for the data station; **RAD Studio / Delphi** with
-  **DUnitX**, and **Appium + WinAppDriver** for the legacy/UI station. Any station can fall
+  **DUnitX**, and **Appium + NovaWindows** for the legacy/UI station. Any station can fall
   back to a pre-baked branch or recording if a toolchain or a live agent is unavailable.
 - See `demo-repo/README.md` for the full, per-station prerequisites pointer.
 
-### 2. Push the demo repo to your own org (required)
+### 2. Get the demo repo into an org you control (required)
 
 The cloud coding agent, PRs, **Agent Merge** and **Automations** all need the repo to live
-on GitHub under an org you control. Do this before the session:
+on GitHub under an org you control. The sample is published as a standalone repo that
+attendees clone:
 
-```bash
-# from the package root
-cd demo-repo
-git init
-git add .
-git commit -m "NorthBank demo repo for Agentic Coding 101"
+**https://github.com/amilos/agentic-coding-101-demo** — carries the per-station fallback
+branches (`station-1` … `station-7`, `openspec`) off `main`.
 
-# create the repo in YOUR org and push (replace YOUR-ORG)
-gh repo create YOUR-ORG/northbank-demo --private --source=. --push
-```
+- **Delivering as `amilos`:** it's ready — open it in the Copilot app.
+- **Re-delivering elsewhere:** fork it into your own org so you own the cloud sessions/PRs:
+  ```bash
+  gh repo fork amilos/agentic-coding-101-demo --org YOUR-ORG --clone
+  ```
+  (The canonical source also lives in this package under `demo-repo/` if you'd rather push a fresh copy.)
 
-Then open the pushed repo in the Copilot app (**Add repository** → select it) so cloud
+Then open the repo in the Copilot app (**Add repository** → select it) so cloud
 sessions, `My Work`, PR review and Automations are available.
 
 > `demo-repo/` ships two intentional defects (a missing daily-transfer-limit feature and a
@@ -113,7 +113,7 @@ open slides/index.html          # macOS
 | Time | Segment |
 | --- | --- |
 | 0:00–0:10 | **Framing** — autocomplete → chat → agent-native; "using Copilot, not building agents". |
-| 0:10–0:25 | **Core concepts + live app tour** — install Addy Osmani `agent-skills` together. |
+| 0:10–0:25 | **Core concepts + live app tour** — install community skills from the `agentic-coding-101-marketplace` together. |
 | 0:25–0:30 | **Exercise 0 warm-up** — connect the repo, start a first session. |
 | 0:30–1:20 | **Seven stations** (~7 min each: demo → micro-exercise → debrief). |
 | 1:20–1:25 | **Break**. |
@@ -124,8 +124,8 @@ open slides/index.html          # macOS
 
 1. **Plan / Requirements** *(Architect/Dev)* — GitHub issue → structured task list via a skill.
 2. **Design / Architecture** *(Architect)* — options + ADR for idempotent, safely-retried transfers, on a canvas.
-3. **Implement in C#** *(Dev)* — assign an issue to an agent session; multi-file feature in PaymentService.
+3. **Implement in C#** *(Dev)* — assign an issue to an agent session; multi-file feature in PaymentService; open a PR (reviewed & merged in Station 7).
 4. **Data / T-SQL** *(Dev/Architect)* — Atlas declarative migration + tSQLt tests; optimise the slow statement query.
-5. **Legacy / Delphi + UI test** *(Dev/QA)* — explain & refactor InterestCalc; DUnitX tests; Appium/WinAppDriver UI test.
+5. **Legacy / Delphi + UI test** *(Dev/QA)* — explain & refactor InterestCalc; DUnitX tests; Appium/NovaWindows UI test.
 6. **Author a skill** *(All)* — attendees create, install and invoke their own skill (`pii-redaction-check`).
 7. **Review & Ship** *(QA/All)* — Copilot code review on the PR, Agent Merge, and a nightly dependency/compliance Automation.

@@ -290,6 +290,7 @@
           <li>A <code>SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>).</li>
           <li>Loaded on demand when the task matches.</li>
           <li>Community: <strong>Addy Osmani <code>agent-skills</code></strong> (24 lifecycle skills), <strong>Matt Pocock</strong> short-form skills, <strong>github/awesome-copilot</strong>.</li>
+          <li>Get them two ways: <strong>copy folders into <code>.github/skills/</code></strong>, or <strong>install a plugin from a marketplace</strong> (next slide).</li>
         </ul>
         <pre class="prompt"><code>.github/skills/banking-review/SKILL.md
 ---
@@ -297,21 +298,29 @@ name: banking-review
 description: Review a diff for NorthBank money-safety rules
 ---</code></pre>
         <aside class="notes">
-          In the tour (0:10&ndash;0:25) we install Addy Osmani's agent-skills together so everyone has a shared, real library.
-          Skills are the lightest customisation: a markdown file with frontmatter. Attendees author their own in Station 6.
+          Two ways to get skills into a repo: drop folders under .github/skills/ (the app reads them), or install a plugin from a
+          marketplace (next slide). In the tour (0:10&ndash;0:25) we install from our own marketplace,
+          amilos/agentic-coding-101-marketplace, which bundles Addy Osmani's and Matt Pocock's packs. Attendees author their own in Station 6.
         </aside>
       </section>
       <section>
         <h2>Extending Copilot: Plugins</h2>
         <p><strong>Plugins</strong> bundle custom agents, skills, hooks, MCP servers and LSP configs.</p>
         <ul class="tight">
-          <li>Custom agents: <code>*.agent.md</code></li>
-          <li>Hooks: <code>hooks.json</code> &middot; MCP: <code>.mcp.json</code> / <code>mcp.json</code></li>
-          <li>Install: <code>/plugin install owner/repo</code></li>
+          <li>Custom agents: <code>*.agent.md</code> &middot; Hooks: <code>hooks.json</code> &middot; MCP: <code>.mcp.json</code></li>
+          <li>A <strong>marketplace</strong> = a repo with <code>marketplace.json</code> under <code>.github/plugin</code>.</li>
+          <li>Add &amp; install right in the app &mdash; <strong>Settings &rarr; Plugins</strong>:</li>
         </ul>
+        <pre class="prompt"><code>Settings &rarr; Plugins &rarr; Install &rarr; Add Marketplace
+   amilos/agentic-coding-101-marketplace
+&rarr; Install:  addyosmani-agent-skills
+&rarr; Install:  mattpocock-skills</code></pre>
+        <p class="small">Course marketplace bundles Addy Osmani's (24) + Matt Pocock's (39) skills as two plugins &mdash; MIT, redistributed with attribution.</p>
         <aside class="notes">
-          Plugins are how a bank platform team packages house rules and ships them to everyone with one install command.
-          The demo-repo ships a sample security-reviewer.agent.md to show the shape of a custom agent.
+          We publish a real marketplace, amilos/agentic-coding-101-marketplace, bundling Addy Osmani's (24) and Matt Pocock's (39)
+          skills as two plugins &mdash; MIT, redistributed with attribution. Do it live in the app GUI: Settings &rarr; Plugins &rarr;
+          Install &rarr; Add Marketplace, enter the owner/repo, then click Install on each listed plugin. A plain skills repo is NOT a
+          marketplace (no marketplace.json), so it will not show up here. A few clicks and every session in the repo gains ~60 community skills.
         </aside>
       </section>
       <section>
@@ -367,7 +376,7 @@ description: Review a diff for NorthBank money-safety rules
         <h2>Station 1 &middot; Plan / Requirements</h2>
         <span class="persona-tag">Architect / Dev</span>
         <p style="margin-top:0.5em">Read issue #1 (the daily-transfer-limit gap) and produce a structured task list with acceptance criteria and likely files to change.</p>
-        <pre class="prompt"><code>Using the requirements-to-tasks skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.</code></pre>
+        <pre class="prompt"><code>Using the planning-and-task-breakdown skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.</code></pre>
         <p class="small"><strong>Expected:</strong> a checklist naming TransferService.cs, Ledger.cs and the test project. <strong>Fallback:</strong> pre-baked task list on branch <code>station-1</code>.</p>
         <aside class="notes">
           Show how a skill shapes the output into a consistent task format. Debrief: the value is a reviewable plan, not code yet.
@@ -404,18 +413,19 @@ description: Review a diff for NorthBank money-safety rules
         <div class="station-no">Station 3</div>
         <h1 style="color:#fff">Implement in C#</h1>
         <span class="persona">Lead: Dev</span>
-        <p class="small" style="color:#cfe0f7">Assign an issue to an agent session; multi-file feature in PaymentService.</p>
-        <aside class="notes">The core implement loop. Assign issue #1 to a session, review the diff before applying. This is also where a sharp eye catches the planted non-positive-amount bug.</aside>
+        <p class="small" style="color:#cfe0f7">Assign an issue to an agent session; multi-file feature in PaymentService; open a PR.</p>
+        <aside class="notes">The core implement loop. Assign issue #1 to a session, review the diff, then open a PR from the session — that PR is what Station 7 reviews and merges. A sharp eye may also spot the planted non-positive-amount bug here.</aside>
       </section>
       <section>
         <h2>Station 3 &middot; Implement in C#</h2>
         <span class="persona-tag">Dev</span>
         <p style="margin-top:0.5em">Implement the daily transfer limit across PaymentService and add xUnit tests &mdash; review the diff first.</p>
-        <pre class="prompt"><code>Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests. Show me the diff before applying.</code></pre>
-        <p class="small"><strong>Expected:</strong> multi-file diff + new passing tests. <strong>Fallback:</strong> completed branch <code>station-3</code>.</p>
+        <pre class="prompt"><code>Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests.</code></pre>
+        <p class="small"><strong>Expected:</strong> multi-file diff + new passing tests; open a PR from the session for Station 7. <strong>Fallback:</strong> completed branch <code>station-3</code>.</p>
         <aside class="notes">
-          Model the habit: "show me the diff before applying." Review on the canvas, then approve. Point out that the tests only
-          cover the limit &mdash; the negative-amount bug is still lurking (we hunt it in Station 6/QA). Micro-exercise: run it, read the diff.
+          The Canvas shows the session's diff by default (no need to ask for it) — review it, approve, then open a PR from the
+          session; Station 7 reviews and merges it. The tests only cover the limit; the negative-amount bug is still lurking (the
+          Station 7 review catches it). Micro-exercise: run it, read the diff on the Canvas.
         </aside>
       </section>
     </section>
@@ -433,7 +443,7 @@ description: Review a diff for NorthBank money-safety rules
         <h2>Station 4 &middot; Data / T-SQL</h2>
         <span class="persona-tag">Dev / Architect</span>
         <p class="small" style="margin:0.3em 0">4a &mdash; Atlas declarative schema change</p>
-        <pre class="prompt"><code>Add a nullable Reference column to LedgerEntries using Atlas declarative schema (atlas/schema.hcl) and generate the migration.</code></pre>
+        <pre class="prompt"><code>In atlas/schema.hcl, add a nullable Reference column of type nvarchar(140) to the LedgerEntries table, then generate the migration with atlas migrate diff.</code></pre>
         <p class="small" style="margin:0.3em 0">4b &mdash; tSQLt tests for the posting proc</p>
         <pre class="prompt"><code>Write tSQLt tests for dbo.PostTransaction covering a normal post and a non-positive amount that must be rejected.</code></pre>
         <p class="small" style="margin:0.3em 0">4c &mdash; make the slow query SARGable</p>
@@ -453,7 +463,7 @@ description: Review a diff for NorthBank money-safety rules
         <div class="station-no">Station 5</div>
         <h1 style="color:#fff">Legacy / Delphi + UI test</h1>
         <span class="persona">Lead: Dev / QA</span>
-        <p class="small" style="color:#cfe0f7">Explain &amp; refactor InterestCalc; DUnitX tests; Appium/WinAppDriver UI test.</p>
+        <p class="small" style="color:#cfe0f7">Explain &amp; refactor InterestCalc; DUnitX tests; Appium/NovaWindows UI test.</p>
         <aside class="notes">Prove the tool works on legacy Object Pascal even though RAD Studio has no inline Copilot. Drive edits from the app, repo/worktree-based.</aside>
       </section>
       <section>
@@ -463,13 +473,13 @@ description: Review a diff for NorthBank money-safety rules
         <pre class="prompt"><code>Explain legacy/InterestCalc.pas, then refactor CalculateMonthlyInterest to use banker's rounding to 2 decimal places without changing the public signature.</code></pre>
         <p class="small" style="margin:0.3em 0">5b &mdash; DUnitX tests</p>
         <pre class="prompt"><code>Generate DUnitX tests for CalculateMonthlyInterest including a rounding edge case.</code></pre>
-        <p class="small" style="margin:0.3em 0">5c &mdash; Appium + WinAppDriver UI test</p>
-        <pre class="prompt"><code>Scaffold an Appium + WinAppDriver test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.</code></pre>
+        <p class="small" style="margin:0.3em 0">5c &mdash; Appium + NovaWindows UI test</p>
+        <pre class="prompt"><code>Scaffold an Appium + NovaWindows test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.</code></pre>
         <p class="small"><strong>Note:</strong> No native inline completion in RAD Studio &mdash; the app edits Object Pascal as text. <strong>Fallback:</strong> branch <code>station-5</code>.</p>
         <aside class="notes">
           Key message: agentic edits/refactors/test-gen work fine on Delphi because the app is repo/worktree-based &mdash; you just
           drive it from the app, not the IDE. The current InterestCalc has a rounding weakness (Trunc / no 2dp). DUnitX for logic,
-          Appium+WinAppDriver for the Win32 statement screen (targets edtAccountId, btnLoad, lstStatement by Name).
+          Appium+NovaWindows for the Win32 statement screen (targets edtAccountId, btnLoad, lstStatement by Name).
         </aside>
       </section>
     </section>
@@ -486,12 +496,14 @@ description: Review a diff for NorthBank money-safety rules
       <section>
         <h2>Station 6 &middot; Author a skill</h2>
         <span class="persona-tag">All</span>
-        <p style="margin-top:0.5em">Complete the starter skill, then run it over the code &mdash; and watch it flag the non-positive-amount path.</p>
+        <p style="margin-top:0.5em">Complete the starter skill, then run it over the code &mdash; watch it flag account numbers reaching logs, console or messages.</p>
         <pre class="prompt"><code>Create a skill named pii-redaction-check that flags account numbers, names and emails written to logs or console. Put it in .github/skills/pii-redaction-check/SKILL.md, then run it over TransferService.cs.</code></pre>
         <p class="small"><strong>Expected:</strong> a completed SKILL.md + findings on logging paths. <strong>Fallback:</strong> reference skill on branch <code>station-6</code>.</p>
         <aside class="notes">
           The repo ships a starter pii-redaction-check/SKILL.md (frontmatter + TODO body). Attendees fill the body, install and
-          invoke it. Debrief: skills encode house rules once, reuse everywhere. QA lens: running review here surfaces the planted bug.
+          invoke it. It flags PII reaching logs/console/messages (e.g. account ids in TransferResult.Fail messages) &mdash; it is
+          NOT a logic check, so it will not find the non-positive-amount bug (that surfaces in the Station 7 review). Debrief:
+          skills encode house rules once, reuse everywhere.
         </aside>
       </section>
     </section>
@@ -595,7 +607,7 @@ openspec archive add-transfer-limit</code></pre>
         </div>
       </div>
       <aside class="notes">
-        The most important slide for a bank audience. Trainer tips: (1) always demo "show me the diff before applying"; (2) never
+        The most important slide for a bank audience. Trainer tips: (1) always demo reading the Canvas diff before applying; (2) never
         merge without a human gate; (3) remind that the banking-review skill and security-reviewer agent exist to make review
         consistent. Tie back to the planted bug: tooling helps, but judgement ships.
       </aside>
