@@ -309,17 +309,18 @@ description: Review a diff for NorthBank money-safety rules
         <ul class="tight">
           <li>Custom agents: <code>*.agent.md</code> &middot; Hooks: <code>hooks.json</code> &middot; MCP: <code>.mcp.json</code></li>
           <li>A <strong>marketplace</strong> = a repo with <code>marketplace.json</code> under <code>.github/plugin</code>.</li>
-          <li>Install from one (Copilot CLI) &mdash; <code>PLUGIN@MARKETPLACE</code>:</li>
+          <li>Add &amp; install right in the app &mdash; <strong>Settings &rarr; Plugins</strong>:</li>
         </ul>
-        <pre class="prompt"><code>/plugin marketplace add amilos/agentic-coding-101-marketplace
-/plugin install addyosmani-agent-skills@agentic-coding-101-marketplace
-/plugin install mattpocock-skills@agentic-coding-101-marketplace</code></pre>
+        <pre class="prompt"><code>Settings &rarr; Plugins &rarr; Install &rarr; Add Marketplace
+   amilos/agentic-coding-101-marketplace
+&rarr; Install:  addyosmani-agent-skills
+&rarr; Install:  mattpocock-skills</code></pre>
         <p class="small">Course marketplace bundles Addy Osmani's (24) + Matt Pocock's (39) skills as two plugins &mdash; MIT, redistributed with attribution.</p>
         <aside class="notes">
           We publish a real marketplace, amilos/agentic-coding-101-marketplace, bundling Addy Osmani's (24) and Matt Pocock's (39)
-          skills as two plugins &mdash; MIT, redistributed with attribution. Two commands and every session in the repo gains ~60
-          community skills. A plain skills repo is NOT a marketplace (no marketplace.json), which is why /plugin install owner/repo
-          fails for those. The app can also enable plugins declaratively via .github/copilot/settings.json.
+          skills as two plugins &mdash; MIT, redistributed with attribution. Do it live in the app GUI: Settings &rarr; Plugins &rarr;
+          Install &rarr; Add Marketplace, enter the owner/repo, then click Install on each listed plugin. A plain skills repo is NOT a
+          marketplace (no marketplace.json), so it will not show up here. A few clicks and every session in the repo gains ~60 community skills.
         </aside>
       </section>
       <section>

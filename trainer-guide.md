@@ -42,15 +42,11 @@ You have been handed a package. Know what each piece is for:
 - [ ] **Pre-bake fallback branches** for every station (see per-station boxes). Push them so you can `git checkout` or open the finished PR instantly if a live agent stalls. Suggested names: `fallback/station-1` … `fallback/station-7`, plus `fallback/openspec`.
 - [ ] **Capture screenshots / short recordings** of each station's happy path. Store them locally — do not rely on the network at delivery time.
 - [ ] **Run each demo once, start to finish, on the training machine.** This warms caches, surfaces licence prompts, and tells you the real wall-clock time each agent takes today.
-- [ ] **Confirm the marketplace demo works from your account** (used in §5). We publish a real Copilot marketplace bundling Addy Osmani's + Matt Pocock's skills: **`amilos/agentic-coding-101-marketplace`**. The marketplace/install flow is a **Copilot CLI** feature, so:
-  - [ ] Install the **Copilot CLI** if it's not on the machine (e.g. `npm install -g @github/copilot`, then run `copilot`). Note: a plain skills repo like `addyosmani/agent-skills` is **not** a Copilot marketplace — only a repo with `marketplace.json` under `.github/plugin` works, which is exactly what we publish.
-  - [ ] Dry-run it once:
-    ```bash
-    copilot plugin marketplace add amilos/agentic-coding-101-marketplace
-    copilot plugin install addyosmani-agent-skills@agentic-coding-101-marketplace
-    copilot plugin install mattpocock-skills@agentic-coding-101-marketplace
-    ```
-  - [ ] **No-CLI fallback:** the Copilot app also loads skills from a repo's `.github/skills/`, so you can instead `git clone` the marketplace and copy a couple of skill folders into `demo-repo/.github/skills/` (or `npx skills add addyosmani/agent-skills`). Keep this ready in case CLI install is blocked.
+- [ ] **Confirm the marketplace demo works in the Copilot app** (used in §5). We publish a real Copilot marketplace bundling Addy Osmani's + Matt Pocock's skills: **`amilos/agentic-coding-101-marketplace`**. Install it once, in the app GUI:
+  - [ ] In the Copilot app: **Settings → Plugins → Install → Add Marketplace**, and enter **`amilos/agentic-coding-101-marketplace`**.
+  - [ ] The two bundled plugins appear in the list — click **Install** on each: **`addyosmani-agent-skills`** and **`mattpocock-skills`**.
+  - [ ] Confirm the skills are now available to sessions in the repo. (A plain skills repo like `addyosmani/agent-skills` is **not** a marketplace — only a repo with `marketplace.json` under `.github/plugin` shows up here, which is exactly what we publish.)
+  - [ ] **No-marketplace fallback:** the app also loads skills from a repo's `.github/skills/`, so you can instead `git clone` the marketplace and copy a couple of skill folders into `demo-repo/.github/skills/`. Keep this ready in case the network is blocked.
 - [ ] **Verify the planted defects are intact** in `demo-repo/src/PaymentService/TransferService.cs` — the missing daily-limit enforcement and the non-positive-amount acceptance. If a previous run committed the fix, reset from `main`.
 - [ ] **Prepare `openspec-demo/`** with OpenSpec initialised so `.github/prompts/*.prompt.md` surface as slash commands.
 - [ ] **Room + network:** test wifi bandwidth; have a mobile hotspot as backup. Have the deck and all recordings available **offline**.
@@ -135,27 +131,24 @@ Whiteboard three boxes:
 | Concept | What it is | Analogy |
 |---|---|---|
 | **Skills** | Folders of instructions/scripts. A `SKILL.md` with YAML frontmatter (`name`, `description`) the agent loads *when relevant*. | A recipe card the agent picks up when the task matches. |
-| **Plugins** | Bundles that ship custom agents (`*.agent.md`), skills, hooks (`hooks.json`), MCP servers (`.mcp.json`/`mcp.json`), LSP config. Installed with `/plugin install owner/repo` **in the Copilot CLI** (the repo must publish a `marketplace.json`); the app enables them via `.github/copilot/settings.json`. | An app store bundle — several capabilities in one install. |
+| **Plugins** | Bundles that ship custom agents (`*.agent.md`), skills, hooks (`hooks.json`), MCP servers (`.mcp.json`/`mcp.json`), LSP config. In the app you add a **marketplace** and click **Install** (**Settings → Plugins**). A marketplace is a repo with a `marketplace.json` under `.github/plugin`. | An app store: add a store, install the apps you want. |
 | **MCP** | Model Context Protocol servers wired into repo/coding-agent settings — gives the agent new tools/data. | A USB port: plug in a tool (filesystem, GitHub, a database) and the agent can use it. |
 
 ### 5c. The live "install from a marketplace" moment — do this together
 
-> **What you're showing:** the real **marketplace → install** flow. We publish a Copilot marketplace, **`amilos/agentic-coding-101-marketplace`**, that bundles Addy Osmani's (24) and Matt Pocock's (39) skills as two plugins — MIT, redistributed with attribution. A *marketplace* is just a repo with a `marketplace.json` under `.github/plugin`; a plain skills repo isn't one, which is why `/plugin install addyosmani/agent-skills` never worked.
+> **What you're showing:** the real **marketplace → install** flow, entirely in the **Copilot app GUI**. We publish a Copilot marketplace, **`amilos/agentic-coding-101-marketplace`**, that bundles Addy Osmani's (24) and Matt Pocock's (39) skills as two plugins — MIT, redistributed with attribution. A *marketplace* is just a repo with a `marketplace.json` under `.github/plugin`; a plain skills repo isn't one.
 >
-> **Run together (Copilot CLI):**
-> ```bash
-> /plugin marketplace add amilos/agentic-coding-101-marketplace
-> /plugin install addyosmani-agent-skills@agentic-coding-101-marketplace
-> /plugin install mattpocock-skills@agentic-coding-101-marketplace
-> ```
-> (Terminal form: `copilot plugin marketplace add …` / `copilot plugin install …`. Install syntax is **`PLUGIN-NAME@MARKETPLACE-NAME`**.)
+> **Do it together, in the app:**
+> 1. **Settings → Plugins → Install → Add Marketplace**.
+> 2. Enter **`amilos/agentic-coding-101-marketplace`**.
+> 3. Two plugins appear — click **Install** on each: **`addyosmani-agent-skills`** and **`mattpocock-skills`**.
 >
-> **Narrate:** "Two commands and every session in this repo just gained ~60 real community skills — Addy Osmani's lifecycle pack and Matt Pocock's Skills for Real Engineers. This is the *distribution* story: a platform team publishes a marketplace once, everyone installs with one line. Station 6 is the *authoring* side of the same mechanism."
-> **Point out** `/plugin list` (or the app's plugin view) showing both plugins, and mention the **github/awesome-copilot** default marketplace as another source.
+> **Narrate:** "A few clicks and every session in this repo just gained ~60 real community skills — Addy Osmani's lifecycle pack and Matt Pocock's Skills for Real Engineers. This is the *distribution* story: a platform team publishes a marketplace once, everyone adds it and installs from the GUI. Station 6 is the *authoring* side of the same mechanism."
+> **Point out** the app's plugin view now listing both plugins and their skills, and mention the built-in marketplaces (**copilot-plugins**, **awesome-copilot**) as other sources.
 >
-> **Fallbacks (no CLI / flaky network), in order:**
-> 1. **App copy path:** `git clone --depth 1 https://github.com/amilos/agentic-coding-101-marketplace /tmp/mk` then `cp -R /tmp/mk/plugins/addyosmani-agent-skills/skills/planning-and-task-breakdown demo-repo/.github/skills/` — the app loads it from `.github/skills/`.
-> 2. **Screenshot** of `/plugin install` succeeding and the skills listed. The concept lands without the live call.
+> **Fallbacks (flaky network), in order:**
+> 1. **App copy path:** `git clone --depth 1 https://github.com/amilos/agentic-coding-101-marketplace /tmp/mk` then `cp -R /tmp/mk/plugins/addyosmani-agent-skills/skills/planning-and-task-breakdown demo-repo/.github/skills/` — the app also loads skills straight from `.github/skills/`.
+> 2. **Screenshot** of the two plugins installed and their skills listed. The concept lands without the live click-through.
 
 ---
 
@@ -445,7 +438,8 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 |---|---|---|
 | Agent won't start a session | Not signed in / no paid licence | Sign in; confirm licence. |
 | No cloud session / PR / Agent Merge | Repo not in your org, or network down | Push demo-repo to your org; use fallback branch. |
-| Community skill won't load | Copied to the wrong path, or repo not re-synced | Confirm it's at `demo-repo/.github/skills/<name>/SKILL.md`; commit so cloud sessions see it. (`/plugin install <skills-repo>` is expected to fail — that's CLI + marketplace only.) |
+| Marketplace won't add / plugin won't install | Wrong owner/repo, marketplace private, or licence issue | In **Settings → Plugins**, re-enter **`amilos/agentic-coding-101-marketplace`** exactly; confirm it's public and you're signed in. Fallback: copy a skill folder into `demo-repo/.github/skills/`. |
+| Skill (copy path) won't load | Wrong path, or repo not re-synced | Confirm it's at `demo-repo/.github/skills/<name>/SKILL.md`; commit so cloud sessions see it. |
 | Skill not invoked | Frontmatter `description` didn't match | Re-prompt naming the skill; check `SKILL.md` frontmatter. |
 | Planted defect already fixed | A prior run committed the fix | Reset `TransferService.cs` from `main`. |
 | Agent tries to open RAD Studio (Station 5) | Assumes IDE needed | Remind: app edits Pascal as text, no IDE. |
