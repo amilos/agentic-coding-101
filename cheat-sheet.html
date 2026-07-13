@@ -176,10 +176,12 @@ when the skill is invoked…</code></pre>
 
   <section class="card">
     <h2>Plugins &amp; MCP</h2>
-    <p><strong>Plugins</strong> bundle agents (<code>*.agent.md</code>), skills, hooks (<code>hooks.json</code>), and MCP servers.</p>
-    <pre><code>/plugin install owner/repo   # Copilot CLI only;
-# repo must publish marketplace.json</code></pre>
-    <p style="font-size:0.85em;opacity:0.75">App enables plugins via <code>.github/copilot/settings.json</code> (<code>enabledPlugins</code>, <code>extraKnownMarketplaces</code>).</p>
+    <p><strong>Plugins</strong> bundle agents (<code>*.agent.md</code>), skills, hooks (<code>hooks.json</code>), and MCP servers. A <strong>marketplace</strong> = a repo with <code>marketplace.json</code> under <code>.github/plugin</code>.</p>
+    <pre><code># Copilot CLI — install PLUGIN@MARKETPLACE
+/plugin marketplace add amilos/agentic-coding-101-marketplace
+/plugin install addyosmani-agent-skills@agentic-coding-101-marketplace
+/plugin install mattpocock-skills@agentic-coding-101-marketplace</code></pre>
+    <p style="font-size:0.85em;opacity:0.75">Course marketplace bundles Addy Osmani + Matt Pocock skills (MIT, attributed). App can also enable plugins via <code>.github/copilot/settings.json</code>. Plain skills repos aren't marketplaces — copy those into <code>.github/skills/</code>.</p>
     <p><strong>MCP</strong> — Model Context Protocol servers wiring external tools/data into the agent. Configured in <code>mcp.json</code> / <code>.github/mcp.json</code> or the repo coding-agent settings.</p>
   </section>
 

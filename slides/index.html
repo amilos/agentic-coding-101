@@ -290,7 +290,7 @@
           <li>A <code>SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>).</li>
           <li>Loaded on demand when the task matches.</li>
           <li>Community: <strong>Addy Osmani <code>agent-skills</code></strong> (24 lifecycle skills), <strong>Matt Pocock</strong> short-form skills, <strong>github/awesome-copilot</strong>.</li>
-          <li>Add a pack: <strong>copy skill folders into <code>.github/skills/</code></strong> — no marketplace needed.</li>
+          <li>Get them two ways: <strong>copy folders into <code>.github/skills/</code></strong>, or <strong>install a plugin from a marketplace</strong> (next slide).</li>
         </ul>
         <pre class="prompt"><code>.github/skills/banking-review/SKILL.md
 ---
@@ -298,23 +298,28 @@ name: banking-review
 description: Review a diff for NorthBank money-safety rules
 ---</code></pre>
         <aside class="notes">
-          In the tour (0:10&ndash;0:25) we add Addy Osmani's agent-skills together: clone the pack and copy a couple of skill
-          folders into the repo's .github/skills/ (it is not a Copilot marketplace, so there is no /plugin install for it).
-          Skills are the lightest customisation: a markdown file with frontmatter. Attendees author their own in Station 6.
+          Two ways to get skills into a repo: drop folders under .github/skills/ (the app reads them), or install a plugin from a
+          marketplace (next slide). In the tour (0:10&ndash;0:25) we install from our own marketplace,
+          amilos/agentic-coding-101-marketplace, which bundles Addy Osmani's and Matt Pocock's packs. Attendees author their own in Station 6.
         </aside>
       </section>
       <section>
         <h2>Extending Copilot: Plugins</h2>
         <p><strong>Plugins</strong> bundle custom agents, skills, hooks, MCP servers and LSP configs.</p>
         <ul class="tight">
-          <li>Custom agents: <code>*.agent.md</code></li>
-          <li>Hooks: <code>hooks.json</code> &middot; MCP: <code>.mcp.json</code> / <code>mcp.json</code></li>
-          <li>Install: <code>/plugin install owner/repo</code> <span class="small">(Copilot CLI; repo must be a marketplace)</span></li>
+          <li>Custom agents: <code>*.agent.md</code> &middot; Hooks: <code>hooks.json</code> &middot; MCP: <code>.mcp.json</code></li>
+          <li>A <strong>marketplace</strong> = a repo with <code>marketplace.json</code> under <code>.github/plugin</code>.</li>
+          <li>Install from one (Copilot CLI) &mdash; <code>PLUGIN@MARKETPLACE</code>:</li>
         </ul>
+        <pre class="prompt"><code>/plugin marketplace add amilos/agentic-coding-101-marketplace
+/plugin install addyosmani-agent-skills@agentic-coding-101-marketplace
+/plugin install mattpocock-skills@agentic-coding-101-marketplace</code></pre>
+        <p class="small">Course marketplace bundles Addy Osmani's (24) + Matt Pocock's (39) skills as two plugins &mdash; MIT, redistributed with attribution.</p>
         <aside class="notes">
-          Plugins are how a bank platform team packages house rules and ships them to everyone. Note the mechanism: /plugin
-          install is a Copilot-CLI command and only resolves repos that publish a marketplace.json; the app enables plugins via
-          .github/copilot/settings.json. The demo-repo ships a sample security-reviewer.agent.md to show the shape of a custom agent.
+          We publish a real marketplace, amilos/agentic-coding-101-marketplace, bundling Addy Osmani's (24) and Matt Pocock's (39)
+          skills as two plugins &mdash; MIT, redistributed with attribution. Two commands and every session in the repo gains ~60
+          community skills. A plain skills repo is NOT a marketplace (no marketplace.json), which is why /plugin install owner/repo
+          fails for those. The app can also enable plugins declaratively via .github/copilot/settings.json.
         </aside>
       </section>
       <section>

@@ -113,7 +113,7 @@ open slides/index.html          # macOS
 | Time | Segment |
 | --- | --- |
 | 0:00–0:10 | **Framing** — autocomplete → chat → agent-native; "using Copilot, not building agents". |
-| 0:10–0:25 | **Core concepts + live app tour** — add Addy Osmani `agent-skills` to the repo together. |
+| 0:10–0:25 | **Core concepts + live app tour** — install community skills from the `agentic-coding-101-marketplace` together. |
 | 0:25–0:30 | **Exercise 0 warm-up** — connect the repo, start a first session. |
 | 0:30–1:20 | **Seven stations** (~7 min each: demo → micro-exercise → debrief). |
 | 1:20–1:25 | **Break**. |

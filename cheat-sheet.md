@@ -65,12 +65,15 @@ Instructions the agent follows when the skill is invoked…
 
 ## Plugins
 
-Bundle **agents** (`*.agent.md`), **skills**, **hooks** (`hooks.json`), and **MCP** servers.
+Bundle **agents** (`*.agent.md`), **skills**, **hooks** (`hooks.json`), and **MCP** servers. A **marketplace** = a repo with `marketplace.json` under `.github/plugin`.
 
 ```
-/plugin install owner/repo   # Copilot CLI only; repo must publish marketplace.json
+# Copilot CLI — install PLUGIN@MARKETPLACE
+/plugin marketplace add amilos/agentic-coding-101-marketplace
+/plugin install addyosmani-agent-skills@agentic-coding-101-marketplace
+/plugin install mattpocock-skills@agentic-coding-101-marketplace
 ```
-App enables plugins via `.github/copilot/settings.json` (`enabledPlugins`, `extraKnownMarketplaces`).
+Course marketplace bundles Addy Osmani + Matt Pocock skills (MIT, attributed). App can also enable plugins via `.github/copilot/settings.json` (`enabledPlugins`, `extraKnownMarketplaces`). Plain skills repos aren't marketplaces — copy those into `.github/skills/`.
 
 ## MCP
 
