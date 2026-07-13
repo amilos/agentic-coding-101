@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Coding 101 — Quick Reference</title>
+<style>
+  :root {
+    --ink: #1a1f2b;
+    --muted: #5a6474;
+    --line: #d7dce4;
+    --accent: #2f5fe0;
+    --accent-soft: #eef2fd;
+    --code-bg: #f4f6fa;
+    --warn: #b23a2e;
+    --warn-soft: #fdeeeb;
+    --good: #1c7a4a;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    margin: 0;
+    padding: 18px 22px 28px;
+    font-size: 10.5px;
+    line-height: 1.42;
+    background: #fff;
+  }
+  header {
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+  }
+  header h1 { margin: 0; font-size: 19px; letter-spacing: -0.2px; }
+  header .sub { color: var(--muted); font-size: 10px; margin-top: 2px; }
+  .grid {
+    column-count: 2;
+    column-gap: 16px;
+  }
+  .card {
+    break-inside: avoid;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 10px 9px;
+    margin: 0 0 12px;
+    background: #fff;
+  }
+  .card h2 {
+    margin: 0 0 6px;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 3px;
+  }
+  .card h3 { margin: 8px 0 3px; font-size: 10.5px; }
+  ul { margin: 3px 0 3px; padding-left: 15px; }
+  li { margin: 1.5px 0; }
+  p { margin: 4px 0; }
+  code, pre {
+    font-family: "SF Mono", "Consolas", "Menlo", monospace;
+    font-size: 9.3px;
+  }
+  code {
+    background: var(--code-bg);
+    padding: 0.5px 3px;
+    border-radius: 3px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin: 5px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.35;
+  }
+  pre code { background: none; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 5px 0; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 3px 5px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--accent-soft); font-weight: 600; }
+  .note {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 5px 8px;
+    border-radius: 0 4px 4px 0;
+    margin: 6px 0 2px;
+    font-size: 9.8px;
+  }
+  .good { color: var(--good); font-weight: 600; }
+  .weak { color: var(--warn); font-weight: 600; }
+  .guardrails li strong { color: var(--warn); }
+  .prompts li { margin: 3px 0; }
+  .prompts strong { color: var(--accent); }
+  .prompts code { display: block; margin-top: 1px; padding: 3px 5px; }
+  footer {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 9px;
+    text-align: center;
+  }
+  @media print {
+    body { padding: 0; font-size: 9.6px; }
+    @page { margin: 12mm; }
+    .card { box-shadow: none; }
+    header { margin-bottom: 10px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Agentic Coding 101 — Quick Reference</h1>
+  <div class="sub">GitHub Copilot app · NorthBank core banking · print &amp; keep</div>
+</header>
+
+<div class="grid">
+
+  <section class="card">
+    <h2>Prompt patterns</h2>
+    <p><span class="weak">Weak:</span> <code>Fix the transfer bug.</code></p>
+    <p><span class="good">Good:</span> <code>TransferService.Transfer accepts a 0 or negative amount, letting money flow the wrong way. Reject non-positive amounts, add an xUnit test, and show me the diff before applying.</code></p>
+    <p><strong>Context:</strong> name the file/class, the rule, the expected behaviour, and the constraint (e.g. money is <code>decimal</code>).</p>
+    <p><strong>Plan/diff first:</strong> end with <em>"Propose a plan"</em> or <em>"Show me the diff before applying"</em>, then approve.</p>
+    <p><strong>Iterate:</strong> feed back the failing test or review comment — don't restart. Small steps beat one giant prompt.</p>
+    <table>
+      <tr><th>Do</th><th>Avoid</th></tr>
+      <tr><td>State file, rule, expected outcome</td><td>"Make it better"</td></tr>
+      <tr><td>Ask for options/ADR on design calls</td><td>Let agent pick silently</td></tr>
+      <tr><td>Request diff before apply</td><td>Auto-apply and hope</td></tr>
+      <tr><td>Paste failing test to iterate</td><td>Restart the whole prompt</td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Copilot app essentials</h2>
+    <ul>
+      <li><strong>Sessions (local vs cloud):</strong> agent runs — local on your machine, GitHub-hosted <strong>cloud</strong> sessions run remotely.</li>
+      <li><strong>Worktrees:</strong> each session runs in its own isolated git worktree — no clobbering your working copy.</li>
+      <li><strong>Canvases:</strong> shared surfaces showing plans, terminals, diffs, and workflow state.</li>
+      <li><strong>My Work:</strong> a queue of your sessions, issues, and PRs.</li>
+      <li><strong>Automations:</strong> recurring/background prompts (e.g. nightly checks).</li>
+      <li><strong>Agent Merge:</strong> guides a PR through review and merge.</li>
+    </ul>
+    <div class="note">The Copilot <strong>app</strong> is the agent-native <strong>desktop</strong> app (Win/macOS/Linux, paid Copilot licence) — <strong>not</strong> the VS Code plugin. Delphi: no native inline completion in RAD Studio; drive edits from the app, which treats Object Pascal as text.</div>
+  </section>
+
+  <section class="card">
+    <h2>Skills</h2>
+    <p>A <strong>SKILL.md</strong> is a folder of instructions Copilot loads when relevant.</p>
+    <pre><code>.github/skills/&lt;name&gt;/SKILL.md</code></pre>
+    <pre><code>---
+name: pii-redaction-check
+description: Flags account numbers,
+  names, emails in logs/console.
+---
+Instructions the agent follows
+when the skill is invoked…</code></pre>
+    <ul>
+      <li><strong>Author:</strong> YAML frontmatter (<code>name</code>, <code>description</code>) + markdown instructions.</li>
+      <li><strong>Install:</strong> drop under <code>.github/skills/</code>.</li>
+      <li><strong>Invoke:</strong> reference by name in a prompt, or let Copilot auto-load it.</li>
+    </ul>
+    <p><strong>Community:</strong> Addy Osmani <code>agent-skills</code> (24 lifecycle skills) · Matt Pocock short-form skills (tiny SKILL.md) · <code>github/awesome-copilot</code>.</p>
+  </section>
+
+  <section class="card">
+    <h2>Plugins &amp; MCP</h2>
+    <p><strong>Plugins</strong> bundle agents (<code>*.agent.md</code>), skills, hooks (<code>hooks.json</code>), and MCP servers.</p>
+    <pre><code>/plugin install owner/repo</code></pre>
+    <p><strong>MCP</strong> — Model Context Protocol servers wiring external tools/data into the agent. Configured in <code>mcp.json</code> / <code>.github/mcp.json</code> or the repo coding-agent settings.</p>
+  </section>
+
+  <section class="card">
+    <h2>Spec-driven (OpenSpec)</h2>
+    <p>Lightweight, brownfield-first. Flow:</p>
+    <pre><code>propose add-transfer-limit  → review
+apply   add-transfer-limit  → implement
+archive add-transfer-limit  → close out</code></pre>
+    <p>Generates <code>.github/prompts/*.prompt.md</code>, surfaced as <code>/propose</code> <code>/apply</code> <code>/archive</code>.</p>
+    <div class="note"><strong>Heavier alternative — GitHub Spec Kit:</strong> templates + CLI, <code>/specify</code> <code>/plan</code> <code>/tasks</code>, agent-agnostic (30+ agents).</div>
+  </section>
+
+  <section class="card">
+    <h2>Testing quick refs</h2>
+    <table>
+      <tr><th>Tool</th><th>Use</th></tr>
+      <tr><td><strong>tSQLt</strong></td><td>SQL Server unit tests for stored procs</td></tr>
+      <tr><td><strong>Atlas</strong></td><td>Declarative schema-as-code migrations (mssql)</td></tr>
+      <tr><td><strong>DUnitX</strong></td><td>Delphi / Win32 unit tests</td></tr>
+      <tr><td><strong>Appium + WinAppDriver</strong></td><td>Win32 VCL UI automation</td></tr>
+    </table>
+  </section>
+
+  <section class="card guardrails">
+    <h2>Guardrails (banking)</h2>
+    <ul>
+      <li><strong>Review every diff</strong> — read it before it lands.</li>
+      <li><strong>Never merge unreviewed AI output.</strong></li>
+      <li>Money is <strong><code>decimal</code> / <code>Currency</code>, never <code>float</code></strong>.</li>
+      <li><strong>No PII in logs or prompts</strong> (account numbers, names, emails).</li>
+      <li><strong>Keep secrets out of context</strong> — no keys/connection strings.</li>
+      <li>Respect <strong>licence &amp; data policy</strong> for anything the agent pulls in.</li>
+    </ul>
+  </section>
+
+  <section class="card prompts">
+    <h2>Handy prompts (canonical)</h2>
+    <ul>
+      <li><strong>Plan:</strong> <code>Using the requirements-to-tasks skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.</code></li>
+      <li><strong>Design/ADR:</strong> <code>We retry failed transfers. Propose 2–3 designs to make Transfer idempotent so a retry never double-posts. Compare trade-offs, then write an ADR to docs/adr/0001-idempotent-transfers.md.</code></li>
+      <li><strong>Implement:</strong> <code>Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests. Show me the diff before applying.</code></li>
+      <li><strong>Atlas:</strong> <code>Add a nullable Reference column to LedgerEntries using Atlas declarative schema (atlas/schema.hcl) and generate the migration.</code></li>
+      <li><strong>tSQLt:</strong> <code>Write tSQLt tests for dbo.PostTransaction covering a normal post and a non-positive amount that must be rejected.</code></li>
+      <li><strong>SARGable:</strong> <code>Explain why db/reports_slow.sql is slow and rewrite it to be SARGable; suggest the index to add.</code></li>
+      <li><strong>Delphi refactor:</strong> <code>Explain legacy/InterestCalc.pas, then refactor CalculateMonthlyInterest to use banker's rounding to 2 decimal places without changing the public signature.</code></li>
+      <li><strong>DUnitX:</strong> <code>Generate DUnitX tests for CalculateMonthlyInterest including a rounding edge case.</code></li>
+      <li><strong>Appium:</strong> <code>Scaffold an Appium + WinAppDriver test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.</code></li>
+      <li><strong>Author skill:</strong> <code>Create a skill named pii-redaction-check that flags account numbers, names and emails written to logs or console. Put it in .github/skills/pii-redaction-check/SKILL.md, then run it over TransferService.cs.</code></li>
+      <li><strong>Review:</strong> <code>Review this PR for banking-safety issues and summarise required changes.</code></li>
+      <li><strong>Automation:</strong> <code>Every night, check for outdated NuGet dependencies and known CVEs and open an issue if any are found.</code></li>
+    </ul>
+  </section>
+
+</div>
+
+<footer>Agentic Coding 101 with the GitHub Copilot App · participant handout · British English</footer>
+</body>
+</html>
