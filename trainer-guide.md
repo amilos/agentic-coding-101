@@ -42,7 +42,15 @@ You have been handed a package. Know what each piece is for:
 - [ ] **Pre-bake fallback branches** for every station (see per-station boxes). Push them so you can `git checkout` or open the finished PR instantly if a live agent stalls. Suggested names: `fallback/station-1` … `fallback/station-7`, plus `fallback/openspec`.
 - [ ] **Capture screenshots / short recordings** of each station's happy path. Store them locally — do not rely on the network at delivery time.
 - [ ] **Run each demo once, start to finish, on the training machine.** This warms caches, surfaces licence prompts, and tells you the real wall-clock time each agent takes today.
-- [ ] **Install the community skill you'll demo live:** confirm `/plugin install addyosmani/agent-skills` works from your account (it's used in §5).
+- [ ] **Stage the community skills you'll demo live** (used in §5). The Copilot app loads skills from a repo's `.github/skills/`. `addyosmani/agent-skills` is **not** a Copilot marketplace (it's a Claude-Code one), so `/plugin install addyosmani/agent-skills` will **not** resolve — clone the pack and copy a few skills in:
+  ```bash
+  git clone --depth 1 https://github.com/addyosmani/agent-skills /tmp/agent-skills
+  mkdir -p demo-repo/.github/skills
+  cp -R /tmp/agent-skills/skills/planning-and-task-breakdown demo-repo/.github/skills/
+  cp -R /tmp/agent-skills/skills/code-review-and-quality     demo-repo/.github/skills/
+  cd demo-repo && git add .github/skills && git commit -m "Add community skills (Addy Osmani, MIT)"
+  ```
+  Shortcut to try: `npx skills add addyosmani/agent-skills`. (`/plugin install owner/repo` is a **Copilot CLI**-only command and only resolves repos published as a Copilot marketplace — `marketplace.json` under `.github/plugin`.)
 - [ ] **Verify the planted defects are intact** in `demo-repo/src/PaymentService/TransferService.cs` — the missing daily-limit enforcement and the non-positive-amount acceptance. If a previous run committed the fix, reset from `main`.
 - [ ] **Prepare `openspec-demo/`** with OpenSpec initialised so `.github/prompts/*.prompt.md` surface as slash commands.
 - [ ] **Room + network:** test wifi bandwidth; have a mobile hotspot as backup. Have the deck and all recordings available **offline**.
@@ -54,7 +62,7 @@ You have been handed a package. Know what each piece is for:
 | Time | Duration | Segment |
 |---|---|---|
 | 0:00–0:10 | 10 min | Framing |
-| 0:10–0:25 | 15 min | Core concepts + live app tour (install Addy Osmani `agent-skills` together) |
+| 0:10–0:25 | 15 min | Core concepts + live app tour (add Addy Osmani `agent-skills` to the repo together) |
 | 0:25–0:30 | 5 min | Exercise 0 — warm-up (connect repo, first session) |
 | 0:30–1:20 | 50 min | Seven stations (~7 min each: demo → micro-exercise → debrief) |
 | 1:20–1:25 | 5 min | Break |
@@ -127,17 +135,23 @@ Whiteboard three boxes:
 | Concept | What it is | Analogy |
 |---|---|---|
 | **Skills** | Folders of instructions/scripts. A `SKILL.md` with YAML frontmatter (`name`, `description`) the agent loads *when relevant*. | A recipe card the agent picks up when the task matches. |
-| **Plugins** | Bundles that ship custom agents (`*.agent.md`), skills, hooks (`hooks.json`), MCP servers (`.mcp.json`/`mcp.json`), LSP config. Install with `/plugin install owner/repo`. | An app store bundle — several capabilities in one install. |
+| **Plugins** | Bundles that ship custom agents (`*.agent.md`), skills, hooks (`hooks.json`), MCP servers (`.mcp.json`/`mcp.json`), LSP config. Installed with `/plugin install owner/repo` **in the Copilot CLI** (the repo must publish a `marketplace.json`); the app enables them via `.github/copilot/settings.json`. | An app store bundle — several capabilities in one install. |
 | **MCP** | Model Context Protocol servers wired into repo/coding-agent settings — gives the agent new tools/data. | A USB port: plug in a tool (filesystem, GitHub, a database) and the agent can use it. |
 
-### 5c. The live install moment — do this together
+### 5c. The live "add a community skill" moment — do this together
 
-> **Everyone types this at once:**
-> **`/plugin install addyosmani/agent-skills`**
+> **Reality check for the room:** Copilot skills are just folders (`SKILL.md`) the app reads from a repo's `.github/skills/`. There is **no `/plugin install` for a plain skills repo** — that command is Copilot-CLI-only and needs the repo to be a published marketplace. Addy Osmani's pack isn't one, so we **copy** the skills we want into our repo. (You most likely did this in prep; do it live if the room is keen.)
 >
-> **Narrate:** "This is Addy Osmani's real community pack — 24 lifecycle skills, Copilot-compatible. We just gave every session in this repo a set of new recipes it can reach for."
-> **Point out** where installed skills appear in the app, and mention siblings: **Matt Pocock's short-form skills** and the **github/awesome-copilot** collection.
-> **Teaching moment:** customisation is *composable* — you'll author your own skill in Station 6, and this is exactly the mechanism.
+> **Run together (or show your pre-baked commit):**
+> ```bash
+> git clone --depth 1 https://github.com/addyosmani/agent-skills /tmp/agent-skills
+> cp -R /tmp/agent-skills/skills/planning-and-task-breakdown demo-repo/.github/skills/
+> cp -R /tmp/agent-skills/skills/code-review-and-quality     demo-repo/.github/skills/
+> ```
+> **Narrate:** "This is Addy Osmani's real community pack — 24 lifecycle skills, MIT-licensed. We just gave every session in this repo a set of new recipes it can reach for — the same folder mechanism you'll use to author your own in Station 6."
+> **Point out** the new folders under `.github/skills/`, and mention siblings: **Matt Pocock's short-form skills** and the **github/awesome-copilot** collection.
+> **Shortcut to try:** `npx skills add addyosmani/agent-skills` (the pack's cross-tool installer).
+> **Teaching moment:** customisation is *composable* — Station 6 is exactly this mechanism, authored from scratch.
 
 > **> Fallback (network flaky):** show a screenshot of the pack installed and its skills listed. The concept lands without the live call.
 
@@ -410,7 +424,7 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 
 **Room setup.** Projector shows *your* screen for demos; participants work on their own machines. Second screen for you runs this guide. Have the deck and all recordings **offline**.
 
-**If wifi / cloud is flaky.** Cloud sessions, PRs, Agent Merge and Automations need the network. If it's degraded: run **local** sessions for the code stations, use **fallback branches/recordings** for anything cloud (PR, merge, Automation), and defer the live `/plugin install` to a screenshot. Have a mobile hotspot ready.
+**If wifi / cloud is flaky.** Cloud sessions, PRs, Agent Merge and Automations need the network. If it's degraded: run **local** sessions for the code stations, use **fallback branches/recordings** for anything cloud (PR, merge, Automation), and skip the live skill clone by committing the copied `.github/skills/` folders ahead of time. Have a mobile hotspot ready.
 
 ### 9c. Wrap
 
@@ -429,7 +443,7 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 |---|---|---|
 | Agent won't start a session | Not signed in / no paid licence | Sign in; confirm licence. |
 | No cloud session / PR / Agent Merge | Repo not in your org, or network down | Push demo-repo to your org; use fallback branch. |
-| `/plugin install` fails | Network or account issue | Show the install screenshot; continue. |
+| Community skill won't load | Copied to the wrong path, or repo not re-synced | Confirm it's at `demo-repo/.github/skills/<name>/SKILL.md`; commit so cloud sessions see it. (`/plugin install <skills-repo>` is expected to fail — that's CLI + marketplace only.) |
 | Skill not invoked | Frontmatter `description` didn't match | Re-prompt naming the skill; check `SKILL.md` frontmatter. |
 | Planted defect already fixed | A prior run committed the fix | Reset `TransferService.cs` from `main`. |
 | Agent tries to open RAD Studio (Station 5) | Assumes IDE needed | Remind: app edits Pascal as text, no IDE. |

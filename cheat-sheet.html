@@ -171,12 +171,15 @@ when the skill is invoked…</code></pre>
       <li><strong>Invoke:</strong> reference by name in a prompt, or let Copilot auto-load it.</li>
     </ul>
     <p><strong>Community:</strong> Addy Osmani <code>agent-skills</code> (24 lifecycle skills) · Matt Pocock short-form skills (tiny SKILL.md) · <code>github/awesome-copilot</code>.</p>
+    <p><strong>Use a pack:</strong> clone it and copy the skill folders into <code>.github/skills/</code> — these repos aren't Copilot marketplaces, so <code>/plugin install</code> won't find them. Shortcut: <code>npx skills add addyosmani/agent-skills</code>.</p>
   </section>
 
   <section class="card">
     <h2>Plugins &amp; MCP</h2>
     <p><strong>Plugins</strong> bundle agents (<code>*.agent.md</code>), skills, hooks (<code>hooks.json</code>), and MCP servers.</p>
-    <pre><code>/plugin install owner/repo</code></pre>
+    <pre><code>/plugin install owner/repo   # Copilot CLI only;
+# repo must publish marketplace.json</code></pre>
+    <p style="font-size:0.85em;opacity:0.75">App enables plugins via <code>.github/copilot/settings.json</code> (<code>enabledPlugins</code>, <code>extraKnownMarketplaces</code>).</p>
     <p><strong>MCP</strong> — Model Context Protocol servers wiring external tools/data into the agent. Configured in <code>mcp.json</code> / <code>.github/mcp.json</code> or the repo coding-agent settings.</p>
   </section>
 

@@ -290,6 +290,7 @@
           <li>A <code>SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>).</li>
           <li>Loaded on demand when the task matches.</li>
           <li>Community: <strong>Addy Osmani <code>agent-skills</code></strong> (24 lifecycle skills), <strong>Matt Pocock</strong> short-form skills, <strong>github/awesome-copilot</strong>.</li>
+          <li>Add a pack: <strong>copy skill folders into <code>.github/skills/</code></strong> — no marketplace needed.</li>
         </ul>
         <pre class="prompt"><code>.github/skills/banking-review/SKILL.md
 ---
@@ -297,7 +298,8 @@ name: banking-review
 description: Review a diff for NorthBank money-safety rules
 ---</code></pre>
         <aside class="notes">
-          In the tour (0:10&ndash;0:25) we install Addy Osmani's agent-skills together so everyone has a shared, real library.
+          In the tour (0:10&ndash;0:25) we add Addy Osmani's agent-skills together: clone the pack and copy a couple of skill
+          folders into the repo's .github/skills/ (it is not a Copilot marketplace, so there is no /plugin install for it).
           Skills are the lightest customisation: a markdown file with frontmatter. Attendees author their own in Station 6.
         </aside>
       </section>
@@ -307,11 +309,12 @@ description: Review a diff for NorthBank money-safety rules
         <ul class="tight">
           <li>Custom agents: <code>*.agent.md</code></li>
           <li>Hooks: <code>hooks.json</code> &middot; MCP: <code>.mcp.json</code> / <code>mcp.json</code></li>
-          <li>Install: <code>/plugin install owner/repo</code></li>
+          <li>Install: <code>/plugin install owner/repo</code> <span class="small">(Copilot CLI; repo must be a marketplace)</span></li>
         </ul>
         <aside class="notes">
-          Plugins are how a bank platform team packages house rules and ships them to everyone with one install command.
-          The demo-repo ships a sample security-reviewer.agent.md to show the shape of a custom agent.
+          Plugins are how a bank platform team packages house rules and ships them to everyone. Note the mechanism: /plugin
+          install is a Copilot-CLI command and only resolves repos that publish a marketplace.json; the app enables plugins via
+          .github/copilot/settings.json. The demo-repo ships a sample security-reviewer.agent.md to show the shape of a custom agent.
         </aside>
       </section>
       <section>

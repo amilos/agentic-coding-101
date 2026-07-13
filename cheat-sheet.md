@@ -58,7 +58,8 @@ Instructions the agent follows when the skill is invoked…
 - **Install:** drop it under `.github/skills/`.
 - **Invoke:** reference it by name in a prompt, or let Copilot auto-load it.
 
-**Community:** Addy Osmani **`agent-skills`** (24 lifecycle skills, Copilot-compatible) · Matt Pocock **short-form skills** (tiny SKILL.md files) · **`github/awesome-copilot`** collection.
+**Community:** Addy Osmani **`agent-skills`** (24 lifecycle skills) · Matt Pocock **short-form skills** (tiny SKILL.md files) · **`github/awesome-copilot`** collection.
+**Use a pack:** clone it and `cp -R` the skill folders into `.github/skills/` — these repos aren't Copilot marketplaces, so `/plugin install` won't find them. Shortcut: `npx skills add addyosmani/agent-skills`.
 
 ---
 
@@ -67,8 +68,9 @@ Instructions the agent follows when the skill is invoked…
 Bundle **agents** (`*.agent.md`), **skills**, **hooks** (`hooks.json`), and **MCP** servers.
 
 ```
-/plugin install owner/repo
+/plugin install owner/repo   # Copilot CLI only; repo must publish marketplace.json
 ```
+App enables plugins via `.github/copilot/settings.json` (`enabledPlugins`, `extraKnownMarketplaces`).
 
 ## MCP
 
