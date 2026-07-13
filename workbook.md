@@ -44,7 +44,7 @@ Agents are non-deterministic — a session may hang, wander, or produce an
 unexpected diff. That is normal in a live room. When it happens:
 
 1. **Steer, don't restart.** Reply in the same session: *"Stop. Focus only on
-   `TransferService.cs`. Show me the diff before applying."*
+   `TransferService.cs`."*
 2. **Reset the worktree.** Each session runs in its own isolated git worktree —
    discard it and start a fresh session from `main`.
 3. **Fall back to the pre-baked artefact.** Every station has a ready-made
@@ -91,7 +91,7 @@ You will keep coming back to these paths. Skim them now:
 | `demo-repo/tests/tsqlt/test_PostTransaction.sql` | tSQLt tests (one written to FAIL) |
 | `demo-repo/legacy/InterestCalc.pas` | Delphi `CalculateMonthlyInterest` (rounding weakness) |
 | `demo-repo/ui/StatementViewer.dpr`, `ui/uMainForm.pas/.dfm` | Win32 VCL statement screen |
-| `demo-repo/tests/dunitx/…`, `tests/appium/…` | DUnitX + Appium/WinAppDriver scaffolds |
+| `demo-repo/tests/dunitx/…`, `tests/appium/…` | DUnitX + Appium/NovaWindows scaffolds |
 | `demo-repo/.github/skills/banking-review/SKILL.md` | A complete sample skill (read it for reference) |
 | `demo-repo/.github/skills/pii-redaction-check/SKILL.md` | A **starter** skill — you complete it in Exercise 6 |
 
@@ -164,7 +164,7 @@ in TransferService"**. This is the gap you will close across the whole session.
 ### Prompt
 
 ```
-Using the requirements-to-tasks skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.
+Using the planning-and-task-breakdown skill, read ISSUES.md issue #1 and produce a structured task list with acceptance criteria and the files likely to change.
 ```
 
 ### Steps
@@ -194,7 +194,9 @@ first transfer of the day).
 
 ### 🆘 If your agent stalls
 
-If the `requirements-to-tasks` skill is not found, run the prompt without the
+`planning-and-task-breakdown` comes from the **`agentic-coding-101-marketplace`**
+you added in §5. If it's not found, either add the marketplace now
+(**Settings → Plugins → Add Marketplace**), or just run the prompt without the
 skill phrase — *"Read ISSUES.md issue #1 and produce a structured task list…"* —
 you'll get a slightly less structured but usable plan.
 
@@ -254,13 +256,14 @@ ADR is on the `solution/station-2` branch.
 
 *Lead persona: Developer.*
 
-**Goal:** implement the daily-limit feature **and** review the diff before it
-lands. This is the heart of the session. ⏱ ~8 min.
+**Goal:** implement the daily-limit feature, review the diff on the Canvas
+before it lands, **and open a PR** — that PR is what you review and merge in
+Exercise 7. This is the heart of the session. ⏱ ~8 min.
 
 ### Prompt
 
 ```
-Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests. Show me the diff before applying.
+Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Update TransferService and add xUnit tests.
 ```
 
 ### Steps
@@ -276,6 +279,9 @@ Implement ISSUES.md issue #1 (daily transfer limit) across PaymentService. Updat
    - returns a clear failure message.
 4. Confirm the new xUnit test asserts an over-limit transfer fails.
 5. Apply the diff, then run the tests (see below).
+6. **Open a PR** from the session (push the branch → *Create pull request*, or
+   let the cloud agent open it). Leave it open — you'll review and merge this PR
+   in **Exercise 7**.
 
 ### Verify it builds and passes
 
@@ -296,6 +302,7 @@ You should now see:
   `DailyTransferLimit` check that uses `SumTransfersToday`.
 - A new failing-then-passing test for the over-limit case.
 - `dotnet test` reporting **all tests passed**.
+- An **open PR** for the daily-limit change — you'll review and merge it in Exercise 7.
 
 ### 🚀 Stretch goal
 
@@ -324,7 +331,7 @@ You will work against `demo-repo/db/…` and `demo-repo/atlas/…`.
 ### 4a — Add a column with Atlas
 
 ```
-Add a nullable Reference column to LedgerEntries using Atlas declarative schema (atlas/schema.hcl) and generate the migration.
+In atlas/schema.hcl, add a nullable Reference column of type nvarchar(140) to the LedgerEntries table, then generate the migration with `atlas migrate diff`.
 ```
 
 1. Run the prompt in a **new local session**.
@@ -411,10 +418,10 @@ Generate DUnitX tests for CalculateMonthlyInterest including a rounding edge cas
 1. Run it. Confirm a `[TestFixture]` with 2–3 `[Test]` cases appears, including
    one rounding case that would have failed against the *old* implementation.
 
-### 5c — Appium / WinAppDriver UI test
+### 5c — Appium / NovaWindows UI test
 
 ```
-Scaffold an Appium + WinAppDriver test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.
+Scaffold an Appium + NovaWindows test that loads a statement for account 1001 in StatementViewer and asserts the list is populated.
 ```
 
 1. Run it. Confirm the scaffold under `tests/appium/` launches
@@ -701,7 +708,7 @@ Tick these off. You have now, hands-on:
 - [ ] Done **declarative schema** work with Atlas and written **tSQLt** tests,
       and made a query **SARGable** (Ex 4).
 - [ ] Refactored **legacy Delphi** safely and scaffolded **DUnitX** +
-      **Appium/WinAppDriver** tests (Ex 5).
+      **Appium/NovaWindows** tests (Ex 5).
 - [ ] **Authored, installed and invoked your own skill** (Ex 6).
 - [ ] Run a **Copilot code review**, caught the planted bug, used **Agent
       Merge**, and set up an **Automation** (Ex 7).
@@ -710,7 +717,7 @@ Tick these off. You have now, hands-on:
 
 ### Habits to take back to your day job
 
-- **Review the diff before applying.** Always. The agent proposes; you decide.
+- **Read the Canvas diff before you apply or merge.** Always. The agent proposes; you decide.
 - **Steer, don't restart.** Most "bad" runs are fixed with one more sentence.
 - **One session per unit of work** — isolated worktrees keep parallel work safe.
 - **Teach the agent your rules with skills** — a tight `description` is what
