@@ -48,7 +48,7 @@ unexpected diff. That is normal in a live room. When it happens:
 2. **Reset the worktree.** Each session runs in its own isolated git worktree —
    discard it and start a fresh session from `main`.
 3. **Fall back to the pre-baked artefact.** Every station has a ready-made
-   branch or file (e.g. `solution/station-3`, or a file under `openspec-demo/`).
+   branch (e.g. `station-3`, or the `openspec` branch for the advanced segment).
    Reading a known-good solution is a legitimate way to learn what "good" looks
    like.
 
@@ -634,7 +634,7 @@ If Agent Merge can't complete (branch protection, no remote), stop at the review
 *For everyone — this is the post-break advanced block.*
 
 **Goal:** run a full **OpenSpec** loop — **propose → apply → archive** — for the
-`add-transfer-limit` change, and see how it surfaces as slash commands in the
+`add-idempotent-transfers` change, and see how it surfaces as slash commands in the
 app. ⏱ ~15 min.
 
 **OpenSpec** is lightweight, brownfield-first, spec-driven development. The flow
@@ -643,27 +643,34 @@ archive it once shipped. It generates `.github/prompts/*.prompt.md` files that
 the Copilot app/CLI surface as **slash commands** (e.g. `/propose`, `/apply`,
 `/archive`).
 
+**Starting point:** the daily limit is already shipped, so we build the next
+*unbuilt* feature — **idempotent transfers** (retry-safe), designed in
+`docs/adr/0001-idempotent-transfers.md` and filed as **issue #6**. The demo repo
+is already OpenSpec-initialised (`openspec/` + `.github/prompts/`); `openspec
+propose` reads issue #6 as its delta.
+
 ### Steps
 
-1. In a session terminal (or a local shell), run the **propose** step:
+1. In a session terminal (or a local shell), run the **propose** step (it reads
+   issue #6 + ADR 0001):
 
    ```
-   openspec propose add-transfer-limit
+   openspec propose add-idempotent-transfers
    ```
 
 2. **Review the generated artefacts** — the proposal, specs, and task list that
-   OpenSpec scaffolds for `add-transfer-limit`. Read them; this is the "spec"
+   OpenSpec scaffolds for `add-idempotent-transfers`. Read them; this is the "spec"
    you're agreeing to before code.
 3. Run **apply** to turn the accepted proposal into changes:
 
    ```
-   openspec apply add-transfer-limit
+   openspec apply add-idempotent-transfers
    ```
 
 4. Once satisfied, **archive** the completed change:
 
    ```
-   openspec archive add-transfer-limit
+   openspec archive add-idempotent-transfers
    ```
 
 5. **Find the slash commands.** Open `.github/prompts/` and note the
@@ -671,14 +678,14 @@ the Copilot app/CLI surface as **slash commands** (e.g. `/propose`, `/apply`,
    commands inside the app. Try invoking one from the session prompt.
 
 **Expected outcome:** a generated proposal + specs + tasks for
-`add-transfer-limit`; an applied change; an archived record; and visible
+`add-idempotent-transfers`; an applied change; an archived record; and visible
 `.github/prompts/*.prompt.md` slash commands.
 
 ### ✅ Checkpoint
 
 You should now see:
 
-- An `add-transfer-limit` proposal with specs and a task list.
+- An `add-idempotent-transfers` proposal with specs and a task list.
 - The change **applied**, then **archived**.
 - `.github/prompts/*.prompt.md` files surfaced as slash commands in the app.
 
@@ -690,9 +697,9 @@ heavier, template + CLI driven, agent-agnostic. When would each fit NorthBank?
 ### 🆘 If your agent stalls
 
 If the live `openspec` run stalls or the CLI isn't installed, the **pre-baked
-artefacts are in `openspec-demo/`** — open that folder to read a completed
-propose → apply → archive cycle for `add-transfer-limit` and the generated
-prompt files, and carry on from there.
+artefacts are on the demo repo's `openspec` branch** — `git checkout openspec`
+to read a completed propose → apply → archive cycle for `add-idempotent-transfers`
+(under `openspec/changes/`) and the generated prompt files, and carry on from there.
 
 ---
 

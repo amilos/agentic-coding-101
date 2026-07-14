@@ -572,15 +572,15 @@ description: Review a diff for NorthBank money-safety rules
           <g stroke="#4a86e8" stroke-width="2" marker-end="url(#ar3)"><line x1="100" y1="48" x2="123" y2="48"/><line x1="215" y1="48" x2="238" y2="48"/></g>
           <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4a86e8"/></marker></defs>
         </svg>
-        <pre class="prompt"><code>openspec propose add-transfer-limit
+        <pre class="prompt"><code>openspec propose add-idempotent-transfers
 # review generated proposal/specs/tasks
-openspec apply  add-transfer-limit
-openspec archive add-transfer-limit</code></pre>
+openspec apply  add-idempotent-transfers
+openspec archive add-idempotent-transfers</code></pre>
         <div class="card" style="margin-top:0.4em"><h4>Contrast: GitHub Spec Kit</h4><p class="small" style="margin:0">Heavier &mdash; templates + CLI, <code>/specify</code> <code>/plan</code> <code>/tasks</code>, agent-agnostic (30+ agents). Choose OpenSpec for brownfield &amp; light-touch; Spec Kit for greenfield &amp; ceremony.</p></div>
         <aside class="notes">
           OpenSpec (Fission-AI) is lightweight and brownfield-first; the propose/apply/archive verbs appear as slash-command
           prompt files. Spec Kit (github/spec-kit) is the heavier, template-driven, agent-agnostic alternative. Position them as
-          two points on a spectrum, not competitors. Reuse add-transfer-limit so it mirrors the station work.
+          two points on a spectrum, not competitors. Starting point: the repo is OpenSpec-initialised and the daily limit is already shipped, so we build the next unbuilt feature &mdash; idempotent transfers, designed in Station 2's ADR 0001 and filed as issue #6; openspec propose reads that issue. Fallback: the pre-baked change on the demo repo's openspec branch.
         </aside>
       </section>
     </section>

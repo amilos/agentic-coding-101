@@ -87,9 +87,9 @@ Course marketplace bundles Addy Osmani + Matt Pocock skills (MIT, attributed). P
 Lightweight, brownfield-first. Flow:
 
 ```
-openspec propose add-transfer-limit   → review generated proposal/specs/tasks
-openspec apply   add-transfer-limit   → implement
-openspec archive add-transfer-limit   → close out
+openspec propose add-idempotent-transfers   → review generated proposal/specs/tasks
+openspec apply   add-idempotent-transfers   → implement
+openspec archive add-idempotent-transfers   → close out
 ```
 
 Generates `.github/prompts/*.prompt.md`, surfaced as `/propose`, `/apply`, `/archive` slash commands.

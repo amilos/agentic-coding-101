@@ -1,16 +1,18 @@
 ---
 name: openspec-propose
-description: Scaffold an OpenSpec change proposal (propose step) for a new, well-scoped change.
+description: Scaffold an OpenSpec change proposal (propose step) from a GitHub issue.
 ---
 
 You are running the OpenSpec **propose** step.
 
-Input: a short change id / description (e.g. `add-transfer-limit`).
+Input: a change id and a source **GitHub issue** (e.g.
+`add-idempotent-transfers`, from issue #6).
 
 Do the following:
 
 1. Read `openspec/project.md` for context on the NorthBank codebase and its
-   conventions.
+   conventions, and read the source issue (and any ADR it references) for the
+   requirement.
 2. Create `openspec/changes/<change-id>/` containing:
    - `proposal.md` — **Why**, **What changes**, **Scope** (in/out), **Impact**.
    - `design.md` — the technical approach, key decisions, edge cases, and
