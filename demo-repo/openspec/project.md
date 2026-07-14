@@ -14,8 +14,7 @@ live in adjacent components).
 
 - `Account` — `{ string Id; string Owner; decimal Balance; decimal DailyTransferLimit; string Currency; }`
 - `ILedger` / `InMemoryLedger` — stores accounts and a list of
-  `LedgerEntry(from, to, amount, timestamp)`; exposes a way to **sum today's
-  transfers out of an account**.
+  `LedgerEntry(from, to, amount, timestamp)`.
 - `TransferService` — `TransferResult Transfer(string fromId, string toId, decimal amount)`.
 
 ## Conventions
@@ -27,6 +26,9 @@ live in adjacent components).
 
 ## Current state (relevant to open changes)
 
-`TransferService.Transfer` moves funds and records a ledger entry, but does
-**not** yet enforce each account's `DailyTransferLimit`. Closing that gap is the
-`add-transfer-limit` change.
+- The per-account **daily transfer limit is enforced** (shipped from the earlier
+  stations — merged to `main`).
+- Transfers are **not yet idempotent**: retrying a `Transfer` that already
+  succeeded posts a second time and double-charges. Closing that gap is the
+  `add-idempotent-transfers` change — designed in
+  `docs/adr/0001-idempotent-transfers.md` and tracked as issue #6.
