@@ -26,8 +26,7 @@ You have been handed a package. Know what each piece is for:
 | `slides/` | Presenter deck for the session. | Projected |
 | `workbook.md` | Participant hands-on workbook — every station's task + expected outcome. | Participants |
 | `cheat-sheet` | One-page quick reference (concepts, prompts, click-paths). Handed out at wrap. | Participants |
-| `demo-repo/` | The NorthBank sample repo with **planted defects** driven live. | Trainer + participants |
-| `openspec-demo/` | OpenSpec-enabled variant for the advanced segment. | Trainer + participants |
+| `demo-repo/` | The NorthBank sample repo with **planted defects** driven live; also **OpenSpec-initialised** (`openspec/` + `.github/prompts/`) for the advanced segment. | Trainer + participants |
 | `trainer-guide.md` | **This file.** | Trainer only |
 
 ---
@@ -48,7 +47,7 @@ You have been handed a package. Know what each piece is for:
   - [ ] Confirm the skills are now available to sessions in the repo. (A plain skills repo like `addyosmani/agent-skills` is **not** a marketplace — only a repo with `marketplace.json` under `.github/plugin` shows up here, which is exactly what we publish.)
   - [ ] **No-marketplace fallback:** the app also loads skills from a repo's `.github/skills/`, so you can instead `git clone` the marketplace and copy a couple of skill folders into `demo-repo/.github/skills/`. Keep this ready in case the network is blocked.
 - [ ] **Verify the planted defects are intact** in `demo-repo/src/PaymentService/TransferService.cs` — the missing daily-limit enforcement and the non-positive-amount acceptance. If a previous run committed the fix, reset from `main`.
-- [ ] **Prepare `openspec-demo/`** with OpenSpec initialised so `.github/prompts/*.prompt.md` surface as slash commands.
+- [ ] **OpenSpec is already set up in the demo repo** — `openspec/project.md` + `.github/prompts/openspec-*.prompt.md` are on `main`, and `docs/adr/0001-idempotent-transfers.md` records the Station 2 decision. Confirm **issue #6 (idempotent transfers)** exists — `openspec propose` reads it as the delta. The `add-idempotent-transfers` change is pre-baked on the **`openspec` branch** as a fallback.
 - [ ] **Room + network:** test wifi bandwidth; have a mobile hotspot as backup. Have the deck and all recordings available **offline**.
 
 ---
@@ -375,7 +374,7 @@ Every night, check for outdated NuGet dependencies and known CVEs and open an is
 
 ## 7. Break — 1:20–1:25
 
-Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them — they watch, then optionally follow in `openspec-demo/`.
+Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them — they watch, then optionally follow in the demo repo (it's already OpenSpec-initialised).
 
 ---
 
@@ -385,13 +384,15 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 
 **Context to give the room:** **OpenSpec** (github.com/Fission-AI/OpenSpec) is a lightweight, **brownfield-first** spec-driven workflow: **propose → apply → archive**. It generates `.github/prompts/*.prompt.md` that the Copilot app/CLI surface as **slash commands**.
 
-**Run the flow live** (in `openspec-demo/`), narrating each step:
+**Starting point:** the demo repo on `main` — the daily limit is already shipped (Stations 3→7), `openspec/` is initialised, and **issue #6** describes the *unbuilt* idempotency feature (designed in `docs/adr/0001-idempotent-transfers.md`, never implemented). Nothing is proposed yet; `openspec/changes/` is empty. The code lives under `src/`, the OpenSpec files under `openspec/` — same repo, side by side.
+
+**Run the flow live** (in the demo repo), narrating each step:
 
 | Step | Command | In the app | What happens |
 |---|---|---|---|
-| Propose | `openspec propose add-transfer-limit` | `/propose`-style prompt | Generates a proposal + spec deltas + tasks. Review them. |
-| Apply | `openspec apply add-transfer-limit` | `/apply` | Implements against the approved spec. |
-| Archive | `openspec archive add-transfer-limit` | `/archive` | Folds the change into the living spec and closes it out. |
+| Propose | `openspec propose add-idempotent-transfers` | `/propose`-style prompt | Reads **issue #6** + ADR 0001 and generates a proposal + spec deltas + tasks. Review them. |
+| Apply | `openspec apply add-idempotent-transfers` | `/apply` | Implements against the approved spec. |
+| Archive | `openspec archive add-idempotent-transfers` | `/archive` | Folds the change into the living spec and closes it out. |
 
 **Teaching moment:** the spec is the source of truth, and the change is proposed, reviewed, applied, then archived — auditable and reviewable, which matters in a bank.
 
@@ -456,7 +457,7 @@ Five minutes. Tell the room the next segment (OpenSpec) needs no setup from them
 - `workbook.md` — participant hands-on tasks (mirrors Stations 1–7).
 - `cheat-sheet` — one-page reference; hand out at wrap.
 - `demo-repo/` — NorthBank sample with planted defects. Key paths: `src/PaymentService/TransferService.cs`, `src/PaymentService/Account.cs`, `src/PaymentService/Ledger.cs`, `tests/PaymentService.Tests/TransferServiceTests.cs`, `db/*.sql`, `atlas/schema.hcl`, `legacy/InterestCalc.pas`, `ui/*`, `tests/tsqlt/`, `tests/dunitx/`, `tests/appium/`, `.github/skills/`, `.github/agents/`, `.github/mcp.json`, `ISSUES.md`.
-- `openspec-demo/` — OpenSpec-enabled variant for §8.
+- OpenSpec lives **in `demo-repo/`**: `openspec/project.md` + `.github/prompts/openspec-*.prompt.md` + `docs/adr/0001-idempotent-transfers.md`. The `add-idempotent-transfers` change is pre-baked on the demo repo's `openspec` branch (fallback for §8).
 
 ### External references (trainer-only)
 

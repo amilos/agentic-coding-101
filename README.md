@@ -35,8 +35,7 @@ By the end, every attendee can:
 | `trainer-guide.md` | Internal facilitator script: per-station talking points, timings, fallbacks. |
 | `workbook.md` | Participant hands-on workbook: each step with an expected outcome and a fallback. |
 | `cheat-sheet.md` / `cheat-sheet.html` | One-page handout of concepts, prompts and shortcuts. |
-| `demo-repo/` | The NorthBank sample repo attendees work in (C#, T-SQL, Delphi, tests, skills, MCP). |
-| `openspec-demo/` | The advanced OpenSpec walkthrough (propose → apply → archive). |
+| `demo-repo/` | The NorthBank sample repo attendees work in (C#, T-SQL, Delphi, tests, skills, MCP). Also **OpenSpec-initialised** (`openspec/` + `.github/prompts/`) for the advanced segment. |
 
 > Some deliverables in this map are produced by their own generators in this package; this
 > README is the top-level entry point that ties them together.
@@ -101,10 +100,11 @@ open slides/index.html          # macOS
   each station (they are printed on the slides, in `trainer-guide.md`, and on the
   cheat-sheet). Start each demo from **My Work**; drive edits from the app (this matters for
   the Delphi station — RAD Studio has no inline Copilot, the app edits Object Pascal as text).
-- **Advanced (OpenSpec):** work in `openspec-demo/`, running
-  `openspec propose add-transfer-limit` → review → `openspec apply add-transfer-limit` →
-  `openspec archive add-transfer-limit`. In the app these surface as `/propose`, `/apply`,
-  `/archive`-style prompt files under `.github/prompts/`.
+- **Advanced (OpenSpec):** in the same `demo-repo/` (already OpenSpec-initialised), start from
+  **issue #6 (idempotent transfers)** and run `openspec propose add-idempotent-transfers` → review →
+  `openspec apply add-idempotent-transfers` → `openspec archive add-idempotent-transfers`. In the app
+  these surface as `/propose`, `/apply`, `/archive`-style prompt files under `.github/prompts/`.
+  (The generated change is pre-baked on the demo repo's `openspec` branch as a fallback.)
 - Each hands-on step has an **expected outcome** and a **fallback** (a pre-baked `station-N`
   branch or a recording) for when a live agent stalls.
 
